@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="frontend/public/logo.png" alt="HireSense" width="400" />
+  <img src="frontend/public/le-commit-HireSense.svg" alt="Le Commit" width="400" />
 </div>
 
 # HireSense - AI-Powered Hiring Verification Platform
