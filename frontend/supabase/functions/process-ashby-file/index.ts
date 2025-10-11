@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
     while (retries > 0 && !candidate) {
       const { data, error } = await supabase
         .from('ashby_candidates')
-        .select('*, user_id, HireSense_applicant_id')
+        .select('*, user_id, unmask_applicant_id')
         .eq('ashby_id', candidateId)
         .single()
       
@@ -310,7 +310,7 @@ Deno.serve(async (req) => {
     
     // Update applicant if in shared_file mode
     if (mode === 'shared_file') {
-      const targetApplicantId = applicantId || candidate.HireSense_applicant_id
+      const targetApplicantId = applicantId || candidate.unmask_applicant_id
       
       if (targetApplicantId) {
         console.log('✅ Updating applicant with file reference...')

@@ -1,22 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import {
-  X,
-  FileText,
-  ExternalLink,
-  Mail,
-  Calendar,
-  Tag,
-  Loader2,
-  CheckCircle,
-  AlertTriangle,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ATSCandidate } from "@/lib/ashby/interfaces";
+import { useEffect, useState } from 'react';
+import { X, FileText, ExternalLink, Mail, Calendar, Tag, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ATSCandidate } from '@/lib/ashby/interfaces';
 // Removed createClient import - using direct API calls instead
-import { ManualAssessmentSection } from "@/components/ManualAssessmentSection";
+import { ManualAssessmentSection } from '@/components/ManualAssessmentSection';
 
 interface ATSCandidateDetailsTrayProps {
   candidate: ATSCandidate | null;
@@ -25,18 +15,10 @@ interface ATSCandidateDetailsTrayProps {
   onCandidateUpdate?: (updatedCandidate: ATSCandidate) => void;
 }
 
-export function ATSCandidateDetailsTray({
-  candidate,
-  isOpen,
-  onClose,
-  onCandidateUpdate,
-}: ATSCandidateDetailsTrayProps) {
+export function ATSCandidateDetailsTray({ candidate, isOpen, onClose, onCandidateUpdate }: ATSCandidateDetailsTrayProps) {
   const [mounted, setMounted] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
-  const [notification, setNotification] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -44,13 +26,13 @@ export function ATSCandidateDetailsTray({
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     }
-
+    
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
@@ -59,23 +41,19 @@ export function ATSCandidateDetailsTray({
   // Fraud analysis not available yet - removed for now
 
   const getStatusBadge = (status?: string, action?: string) => {
-    if (action === "error") {
+    if (action === 'error') {
       return <Badge variant="destructive">Error</Badge>;
     }
-
+    
     switch (status) {
-      case "completed":
-        return (
-          <Badge variant="default" className="bg-green-600">
-            Analyzed
-          </Badge>
-        );
-      case "processing":
-      case "analyzing":
+      case 'completed':
+        return <Badge variant="default" className="bg-green-600">Analyzed</Badge>;
+      case 'processing':
+      case 'analyzing':
         return <Badge variant="secondary">Processing</Badge>;
-      case "pending_from_ashby":
+      case 'pending_from_ashby':
         return <Badge variant="outline">Pending</Badge>;
-      case "failed":
+      case 'failed':
         return <Badge variant="destructive">Failed</Badge>;
       default:
         return <Badge variant="outline">Not Processed</Badge>;
@@ -83,60 +61,54 @@ export function ATSCandidateDetailsTray({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
-  const showNotification = (type: "success" | "error", message: string) => {
+  const showNotification = (type: 'success' | 'error', message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 4000);
   };
 
   const startAnalysis = async () => {
-    if (!candidate?.HireSense_applicant_id) return;
+    if (!candidate?.unmask_applicant_id) return;
     setAnalyzing(true);
-
+    
     try {
       // Call the analysis API directly (no more database triggers)
-      const response = await fetch("/api/analysis", {
-        method: "POST",
+      const response = await fetch('/api/analysis', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          applicant_id: candidate.HireSense_applicant_id,
+          applicant_id: candidate.unmask_applicant_id
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`
-        );
+        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
-      console.log("✅ Analysis completed:", result);
-      showNotification("success", "Analysis completed for " + candidate.name);
-
+      console.log('✅ Analysis completed:', result);
+      showNotification('success', 'Analysis completed for ' + candidate.name);
+      
       // Trigger UI refresh
       if (onCandidateUpdate) {
         onCandidateUpdate(candidate);
       }
-
+      
       setTimeout(() => onClose(), 2000); // Close the tray after showing notification
     } catch (error) {
-      console.error("Failed to start analysis:", error);
-      showNotification(
-        "error",
-        "Failed to start analysis: " +
-          (error instanceof Error ? error.message : "Unknown error")
-      );
+      console.error('Failed to start analysis:', error);
+      showNotification('error', 'Failed to start analysis: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setAnalyzing(false);
     }
@@ -146,16 +118,16 @@ export function ATSCandidateDetailsTray({
     <>
       {/* Backdrop */}
       {isOpen && (
-        <div
+        <div 
           className="fixed inset-0 bg-black bg-opacity-30 z-40 transition-opacity duration-300"
           onClick={onClose}
         />
       )}
 
       {/* Tray */}
-      <div
+      <div 
         className={`fixed right-0 top-0 h-full w-[600px] bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+          isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {candidate && (
@@ -163,11 +135,9 @@ export function ATSCandidateDetailsTray({
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div className="flex-1">
-                <h2 className="text-2xl font-semibold text-gray-900">
-                  {candidate.name}
-                </h2>
+                <h2 className="text-2xl font-semibold text-gray-900">{candidate.name}</h2>
                 <div className="flex items-center gap-3 mt-2">
-                  {getStatusBadge(candidate.HireSense_status, candidate.action)}
+                  {getStatusBadge(candidate.unmask_status, candidate.action)}
                 </div>
               </div>
               <button
@@ -183,9 +153,7 @@ export function ATSCandidateDetailsTray({
               <div className="p-6 space-y-6">
                 {/* Contact Information */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">
-                    Contact Information
-                  </h3>
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Contact Information</h3>
                   <div className="space-y-2">
                     {candidate.email && (
                       <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -203,9 +171,7 @@ export function ATSCandidateDetailsTray({
                 {/* Tags */}
                 {candidate.tags.length > 0 && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-3">
-                      Tags
-                    </h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-3">Tags</h3>
                     <div className="flex flex-wrap gap-2">
                       {candidate.tags.map((tag, index) => (
                         <Badge key={index} variant="outline">
@@ -219,27 +185,23 @@ export function ATSCandidateDetailsTray({
 
                 {/* Data Sources */}
                 <div>
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">
-                    Available Data Sources
-                  </h3>
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Available Data Sources</h3>
                   <div className="space-y-2">
                     {candidate.linkedin_url && (
-                      <a
-                        href={candidate.linkedin_url}
-                        target="_blank"
+                      <a 
+                        href={candidate.linkedin_url} 
+                        target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
                       >
                         <ExternalLink className="h-4 w-4" />
-                        <span className="font-medium">
-                          View LinkedIn Profile
-                        </span>
+                        <span className="font-medium">View LinkedIn Profile</span>
                       </a>
                     )}
                     {candidate.has_resume && candidate.resume_url && (
-                      <a
-                        href={candidate.resume_url}
-                        target="_blank"
+                      <a 
+                        href={candidate.resume_url} 
+                        target="_blank" 
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
                       >
@@ -256,36 +218,26 @@ export function ATSCandidateDetailsTray({
                 </div>
 
                 {/* Professional Information */}
-                {(candidate.position ||
-                  candidate.company ||
-                  candidate.school) && (
+                {(candidate.position || candidate.company || candidate.school) && (
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <h3 className="text-sm font-medium text-gray-900 mb-3">
-                      Professional Information
-                    </h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-3">Professional Information</h3>
                     <div className="space-y-2">
                       {candidate.position && (
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">Position</span>
-                          <span className="text-gray-900">
-                            {candidate.position}
-                          </span>
+                          <span className="text-gray-900">{candidate.position}</span>
                         </div>
                       )}
                       {candidate.company && (
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">Company</span>
-                          <span className="text-gray-900">
-                            {candidate.company}
-                          </span>
+                          <span className="text-gray-900">{candidate.company}</span>
                         </div>
                       )}
                       {candidate.school && (
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600">School</span>
-                          <span className="text-gray-900">
-                            {candidate.school}
-                          </span>
+                          <span className="text-gray-900">{candidate.school}</span>
                         </div>
                       )}
                     </div>
@@ -293,7 +245,7 @@ export function ATSCandidateDetailsTray({
                 )}
 
                 {/* Manual Assessment Section */}
-                <ManualAssessmentSection
+                <ManualAssessmentSection 
                   candidate={candidate}
                   onUpdate={(updatedCandidate) => {
                     // Update the parent component's state
@@ -305,78 +257,60 @@ export function ATSCandidateDetailsTray({
 
                 {/* Processing Status */}
                 <div className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-sm font-medium text-gray-900 mb-3">
-                    Processing Information
-                  </h3>
+                  <h3 className="text-sm font-medium text-gray-900 mb-3">Processing Information</h3>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">HireSense Status</span>
-                      {getStatusBadge(
-                        candidate.HireSense_status,
-                        candidate.action
-                      )}
+                      <span className="text-gray-600">Unmask Status</span>
+                      {getStatusBadge(candidate.unmask_status, candidate.action)}
                     </div>
-                    {candidate.HireSense_applicant_id && (
+                    {candidate.unmask_applicant_id && (
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">HireSense ID</span>
+                        <span className="text-gray-600">Unmask ID</span>
                         <code className="text-xs bg-gray-200 px-2 py-1 rounded">
-                          {candidate.HireSense_applicant_id.slice(0, 8)}...
+                          {candidate.unmask_applicant_id.slice(0, 8)}...
                         </code>
                       </div>
                     )}
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">
-                        Ready for Processing
-                      </span>
-                      <span
-                        className={
-                          candidate.ready_for_processing
-                            ? "text-green-600"
-                            : "text-gray-500"
-                        }
-                      >
-                        {candidate.ready_for_processing ? "Yes" : "No"}
+                      <span className="text-gray-600">Ready for Processing</span>
+                      <span className={candidate.ready_for_processing ? 'text-green-600' : 'text-gray-500'}>
+                        {candidate.ready_for_processing ? 'Yes' : 'No'}
                       </span>
                     </div>
                   </div>
                 </div>
+
+
               </div>
             </div>
 
             {/* Footer */}
             <div className="border-t border-gray-200 p-6">
               <div className="flex gap-3">
-                {candidate.HireSense_applicant_id &&
-                  candidate.HireSense_status === "completed" && (
-                    <Button
-                      className="flex-1"
-                      onClick={() =>
-                        window.open(
-                          `/board?id=${candidate.HireSense_applicant_id}`,
-                          "_blank"
-                        )
-                      }
-                    >
-                      View Full Analysis
-                    </Button>
-                  )}
-                {candidate.ready_for_processing &&
-                  !candidate.HireSense_applicant_id && (
-                    <Button
-                      className="flex-1"
-                      disabled={analyzing}
-                      onClick={startAnalysis}
-                    >
-                      {analyzing ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                          Starting Analysis...
-                        </>
-                      ) : (
-                        "Start Analysis"
-                      )}
-                    </Button>
-                  )}
+                {candidate.unmask_applicant_id && candidate.unmask_status === 'completed' && (
+                  <Button 
+                    className="flex-1"
+                    onClick={() => window.open(`/board?id=${candidate.unmask_applicant_id}`, '_blank')}
+                  >
+                    View Full Analysis
+                  </Button>
+                )}
+                {candidate.ready_for_processing && !candidate.unmask_applicant_id && (
+                  <Button 
+                    className="flex-1"
+                    disabled={analyzing}
+                    onClick={startAnalysis}
+                  >
+                    {analyzing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                        Starting Analysis...
+                      </>
+                    ) : (
+                      'Start Analysis'
+                    )}
+                  </Button>
+                )}
                 <Button variant="outline" onClick={onClose}>
                   Close
                 </Button>
@@ -384,22 +318,19 @@ export function ATSCandidateDetailsTray({
             </div>
           </div>
         )}
-
+        
         {/* Notification Toast */}
         {notification && (
           <div className="fixed top-4 right-4 z-50 animate-in fade-in slide-in-from-right duration-300">
-            <div
-              className={`
+            <div className={`
               px-6 py-4 rounded-lg shadow-lg max-w-sm
-              ${
-                notification.type === "success"
-                  ? "bg-green-600 text-white"
-                  : "bg-red-600 text-white"
+              ${notification.type === 'success' 
+                ? 'bg-green-600 text-white' 
+                : 'bg-red-600 text-white'
               }
-            `}
-            >
+            `}>
               <div className="flex items-center gap-3">
-                {notification.type === "success" ? (
+                {notification.type === 'success' ? (
                   <CheckCircle className="h-5 w-5 flex-shrink-0" />
                 ) : (
                   <AlertTriangle className="h-5 w-5 flex-shrink-0" />

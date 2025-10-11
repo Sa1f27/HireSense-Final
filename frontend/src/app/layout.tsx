@@ -5,7 +5,7 @@ import "./globals.css";
 import ConditionalNavbar from "@/components/ConditionalNavbar";
 import { AuthProvider } from "@/lib/contexts/AuthContext";
 import { UserProfileProvider } from "@/lib/contexts/UserProfileContext";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleTagManager } from '@next/third-parties/google'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,9 +18,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HireSense - Real time reference checking made easy",
-  description:
-    "Real-time interview anti-cheating agent for detecting inconsistencies",
+  title: "Unmask - Real time reference checking made easy",
+  description: "Real-time interview anti-cheating agent for detecting inconsistencies",
 };
 
 export default function RootLayout({

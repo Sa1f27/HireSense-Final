@@ -11,29 +11,29 @@ interface DemoOverlayProps {
 export default function DemoOverlay({ isOpen, onClose }: DemoOverlayProps) {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     }
 
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (e.key === 'Escape') {
         onClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
+      document.addEventListener('keydown', handleEscape);
     }
 
     return () => {
-      document.removeEventListener("keydown", handleEscape);
+      document.removeEventListener('keydown', handleEscape);
     };
   }, [isOpen, onClose]);
 
@@ -42,15 +42,16 @@ export default function DemoOverlay({ isOpen, onClose }: DemoOverlayProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-8">
       {/* Backdrop */}
-      <div
+      <div 
         className="absolute inset-0 bg-black/60 backdrop-blur-md"
         onClick={onClose}
       />
-
+      
       {/* Modal */}
       <div className="relative w-full max-w-4xl mx-auto">
         {/* Glassmorphic container */}
         <div className="relative bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] overflow-hidden">
+          
           {/* Close button */}
           <button
             onClick={onClose}
@@ -61,14 +62,11 @@ export default function DemoOverlay({ isOpen, onClose }: DemoOverlayProps) {
 
           {/* Video Container */}
           <div className="p-4">
-            <div
-              className="relative w-full"
-              style={{ paddingBottom: "56.25%" }}
-            >
+            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
               <iframe
                 className="absolute inset-0 w-full h-full rounded-2xl"
                 src="https://www.youtube.com/embed/YSiELAmtgww?autoplay=1&rel=0&modestbranding=1"
-                title="HireSense Demo Video"
+                title="Unmask Demo Video"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

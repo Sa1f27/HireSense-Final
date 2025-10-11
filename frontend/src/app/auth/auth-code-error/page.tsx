@@ -1,7 +1,7 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import Image from 'next/image';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function AuthCodeErrorPage() {
   return (
@@ -9,20 +9,11 @@ export default function AuthCodeErrorPage() {
       <Card className="w-full max-w-md p-8 space-y-6 text-center">
         <div className="space-y-2">
           <div className="flex justify-center mb-6">
-            <Image
-              src="/logo-2.png"
-              alt="HireSense"
-              width={48}
-              height={48}
-              className="h-12"
-            />
+            <Image src="/unmask-logo.svg" alt="Unmask" width={48} height={48} className="h-12" />
           </div>
-          <h1 className="text-2xl font-bold text-red-600">
-            Authentication Error
-          </h1>
+          <h1 className="text-2xl font-bold text-red-600">Authentication Error</h1>
           <p className="text-gray-600">
-            Something went wrong during the authentication process. This could
-            be due to:
+            Something went wrong during the authentication process. This could be due to:
           </p>
           <ul className="text-sm text-gray-600 text-left space-y-1 mt-4">
             <li>• Invalid or expired authentication code</li>
@@ -33,11 +24,15 @@ export default function AuthCodeErrorPage() {
 
         <div className="space-y-3">
           <Button asChild className="w-full">
-            <Link href="/login">Try Again</Link>
+            <Link href="/login">
+              Try Again
+            </Link>
           </Button>
-
+          
           <Button variant="outline" asChild className="w-full">
-            <Link href="/">Back to Homepage</Link>
+            <Link href="/">
+              Back to Homepage
+            </Link>
           </Button>
         </div>
 

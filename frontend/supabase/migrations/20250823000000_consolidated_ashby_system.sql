@@ -346,7 +346,7 @@ DECLARE
   ai_status processing_status;
 BEGIN
   -- Check if this ashby candidate is already linked to an applicant
-  IF NEW.HireSense_applicant_id IS NOT NULL THEN
+  IF NEW.unmask_applicant_id IS NOT NULL THEN
     -- Update existing linked applicant (keep same cv_file_id if it exists)
     UPDATE public.applicants
     SET
@@ -359,7 +359,7 @@ BEGIN
       cv_file_id = COALESCE(NEW.cv_file_id, cv_file_id), -- Use shared file if available
       score = NEW.base_score, -- Use calculated base_score
       updated_at = now()
-    WHERE id = NEW.HireSense_applicant_id;
+    WHERE id = NEW.unmask_applicant_id;
   ELSE
     -- Calculate initial statuses based on base_score and available data
     -- Implement getInitialStatus logic from spec
@@ -427,7 +427,7 @@ BEGIN
     
     -- Update the ashby_candidates record with the new applicant ID
     UPDATE public.ashby_candidates
-    SET HireSense_applicant_id = applicant_id
+    SET unmask_applicant_id = applicant_id
     WHERE id = NEW.id;
     
     -- If there's a resume file handle but no cv_file_id yet, trigger download

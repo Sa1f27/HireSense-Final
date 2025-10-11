@@ -142,11 +142,11 @@ COMMENT ON FUNCTION public.get_score_source(jsonb) IS 'Utility function to deter
 -- FIX ASHBY CANDIDATES UNIQUE CONSTRAINT
 -- =============================================================================
 
--- Add unique constraint on HireSense_applicant_id to enforce one-to-one relationship
+-- Add unique constraint on unmask_applicant_id to enforce one-to-one relationship
 -- Note: No duplicate cleanup needed since database was reset and constraint prevents future duplicates
 ALTER TABLE public.ashby_candidates 
-ADD CONSTRAINT unique_HireSense_applicant_id 
-UNIQUE (HireSense_applicant_id);
+ADD CONSTRAINT unique_unmask_applicant_id 
+UNIQUE (unmask_applicant_id);
 
 -- Add comment explaining the constraint
-COMMENT ON CONSTRAINT unique_HireSense_applicant_id ON public.ashby_candidates IS 'Ensures one-to-one relationship between applicants and ashby_candidates';
+COMMENT ON CONSTRAINT unique_unmask_applicant_id ON public.ashby_candidates IS 'Ensures one-to-one relationship between applicants and ashby_candidates';

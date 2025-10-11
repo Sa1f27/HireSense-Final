@@ -315,7 +315,7 @@ async function performComprehensiveAnalysis(
 
   // 2. "Reduce" Step: Create a final prompt with the summaries of each analysis
   const prompt = `
-You are a credibility-checking assistant inside HireSense, a tool used by hiring managers to verify whether candidates are being honest and consistent in their job applications.
+You are a credibility-checking assistant inside Unmask, a tool used by hiring managers to verify whether candidates are being honest and consistent in their job applications.
 
 Your job is to review pre-analyzed summaries from different data sources (CV, LinkedIn, GitHub) and produce a final, unified credibility assessment. You are not scoring technical ability — only consistency and believability based on the summaries provided.
 

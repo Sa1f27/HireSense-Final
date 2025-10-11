@@ -1,4 +1,4 @@
-// Ashby API Client for HireSense Integration
+// Ashby API Client for Unmask Integration
 
 import {
   AshbyAuth,
@@ -205,39 +205,39 @@ export class AshbyClient {
     return this.request<AshbyCreateNoteResponse>('/candidate.createNote', 'POST', params);
   }
 
-  // Helper Methods for HireSense Integration
-  async syncHireSenseResults(
+  // Helper Methods for Unmask Integration
+  async syncUnmaskResults(
     candidateId: string,
-    HireSenseData: {
+    unmaskData: {
       score: number;
       verificationStatus: 'verified' | 'flagged' | 'pending';
       flags: Array<{ type: string; message: string }>;
       reportUrl: string;
     }
   ): Promise<AshbyApiResponse<AshbyCandidate>> {
-    // Prepare custom fields based on HireSense data
+    // Prepare custom fields based on Unmask data
     const customFields: Record<string, unknown> = {
-      HireSense_score: HireSenseData.score,
-      HireSense_verification_status: HireSenseData.verificationStatus,
-      HireSense_report_url: HireSenseData.reportUrl,
-      HireSense_flags: JSON.stringify(HireSenseData.flags)
+      unmask_score: unmaskData.score,
+      unmask_verification_status: unmaskData.verificationStatus,
+      unmask_report_url: unmaskData.reportUrl,
+      unmask_flags: JSON.stringify(unmaskData.flags)
     };
 
     // Determine tags based on verification status
     const tags: { add?: string[]; remove?: string[] } = {};
     
-    switch (HireSenseData.verificationStatus) {
+    switch (unmaskData.verificationStatus) {
       case 'verified':
-        tags.add = ['HireSense-verified'];
-        tags.remove = ['HireSense-pending', 'HireSense-flagged'];
+        tags.add = ['unmask-verified'];
+        tags.remove = ['unmask-pending', 'unmask-flagged'];
         break;
       case 'flagged':
-        tags.add = ['HireSense-flagged'];
-        tags.remove = ['HireSense-pending', 'HireSense-verified'];
+        tags.add = ['unmask-flagged'];
+        tags.remove = ['unmask-pending', 'unmask-verified'];
         break;
       case 'pending':
-        tags.add = ['HireSense-pending'];
-        tags.remove = ['HireSense-verified', 'HireSense-flagged'];
+        tags.add = ['unmask-pending'];
+        tags.remove = ['unmask-verified', 'unmask-flagged'];
         break;
     }
 
@@ -252,7 +252,7 @@ export class AshbyClient {
   async batchSyncCandidates(
     candidates: Array<{ 
       ashbyId: string; 
-      HireSenseId: string;
+      unmaskId: string;
       score: number;
       verificationStatus: 'verified' | 'flagged' | 'pending';
     }>
@@ -263,9 +263,9 @@ export class AshbyClient {
           const response = await this.updateCandidate({
             candidateId: candidate.ashbyId,
             customFields: {
-              HireSense_id: candidate.HireSenseId,
-              HireSense_score: candidate.score,
-              HireSense_verification_status: candidate.verificationStatus
+              unmask_id: candidate.unmaskId,
+              unmask_score: candidate.score,
+              unmask_verification_status: candidate.verificationStatus
             }
           });
 

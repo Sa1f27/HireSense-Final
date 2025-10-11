@@ -1,28 +1,28 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
-import {
-  Edit3,
-  Save,
-  X,
-  Loader2,
-  CheckCircle,
-  AlertTriangle,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { ATSCandidate } from "@/lib/ashby/interfaces";
-import { createClient } from "@/lib/supabase/client";
-import { useAuth } from "@/lib/contexts/AuthContext";
+import React, { useState, useEffect } from 'react';
+import { 
+  Edit3, 
+  Save, 
+  X, 
+  Loader2, 
+  CheckCircle, 
+  AlertTriangle
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { ATSCandidate } from '@/lib/ashby/interfaces';
+import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/lib/contexts/AuthContext';
 
 interface EditHistoryEntry {
   id: string;
-  type: "score" | "note";
+  type: 'score' | 'note';
   value: number | string | null;
-  source: "manual" | "ai";
+  source: 'manual' | 'ai';
   date: string;
   user_id?: string;
 }
@@ -32,38 +32,32 @@ interface ManualAssessmentSectionProps {
   onUpdate?: (candidate: ATSCandidate) => void;
 }
 
-export function ManualAssessmentSection({
-  candidate,
-  onUpdate,
-}: ManualAssessmentSectionProps) {
+export function ManualAssessmentSection({ candidate, onUpdate }: ManualAssessmentSectionProps) {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  
   // Form state
   const [formData, setFormData] = useState({
-    score: candidate.score || "",
-    notes: candidate.notes || "",
+    score: candidate.score || '',
+    notes: candidate.notes || ''
   });
-
+  
   // Notification state
   const [notification, setNotification] = useState<{
-    type: "success" | "error" | "info";
+    type: 'success' | 'error' | 'info';
     message: string;
   } | null>(null);
 
   useEffect(() => {
     // Update form data when candidate changes
     setFormData({
-      score: candidate.score || "",
-      notes: candidate.notes || "",
+      score: candidate.score || '',
+      notes: candidate.notes || ''
     });
   }, [candidate.score, candidate.notes]);
 
-  const showNotification = (
-    type: "success" | "error" | "info",
-    message: string
-  ) => {
+  const showNotification = (type: 'success' | 'error' | 'info', message: string) => {
     setNotification({ type, message });
     setTimeout(() => setNotification(null), 4000);
   };
@@ -74,32 +68,32 @@ export function ManualAssessmentSection({
 
   const handleCancel = () => {
     setFormData({
-      score: candidate.score || "",
-      notes: candidate.notes || "",
+      score: candidate.score || '',
+      notes: candidate.notes || ''
     });
     setIsEditing(false);
   };
 
   const handleSave = async () => {
-    if (!candidate.HireSense_applicant_id) {
-      showNotification("error", "No applicant ID found");
+    if (!candidate.unmask_applicant_id) {
+      showNotification('error', 'No applicant ID found');
       return;
     }
 
     if (!user?.id) {
-      showNotification("error", "User not authenticated");
+      showNotification('error', 'User not authenticated');
       return;
     }
 
     setIsLoading(true);
-
+    
     try {
       // Validate score
       let scoreValue: number | null = null;
-      if (formData.score !== "") {
+      if (formData.score !== '') {
         scoreValue = parseInt(formData.score.toString());
         if (isNaN(scoreValue) || scoreValue < 0 || scoreValue > 100) {
-          showNotification("error", "Score must be a number between 0 and 100");
+          showNotification('error', 'Score must be a number between 0 and 100');
           setIsLoading(false);
           return;
         }
@@ -107,7 +101,7 @@ export function ManualAssessmentSection({
 
       // Validate notes length
       if (formData.notes && formData.notes.length > 1000) {
-        showNotification("error", "Notes must be 1000 characters or less");
+        showNotification('error', 'Notes must be 1000 characters or less');
         setIsLoading(false);
         return;
       }
@@ -116,9 +110,9 @@ export function ManualAssessmentSection({
 
       // Get current applicant data to check what needs updating
       const { data: currentApplicant, error: fetchError } = await supabase
-        .from("applicants")
-        .select("score, notes, edit_history")
-        .eq("id", candidate.HireSense_applicant_id)
+        .from('applicants')
+        .select('score, notes, edit_history')
+        .eq('id', candidate.unmask_applicant_id)
         .single();
 
       if (fetchError) {
@@ -136,15 +130,15 @@ export function ManualAssessmentSection({
       // Check if score changed and update
       if (scoreValue !== currentApplicant.score) {
         updateData.score = scoreValue;
-
+        
         // Add to edit history
         newEditHistory.push({
           id: crypto.randomUUID(),
-          type: "score",
+          type: 'score',
           value: scoreValue,
-          source: "manual",
+          source: 'manual',
           date: new Date().toISOString(),
-          user_id: user.id,
+          user_id: user.id
         });
       }
 
@@ -152,16 +146,16 @@ export function ManualAssessmentSection({
       const notesValue = formData.notes || null;
       if (notesValue !== currentApplicant.notes) {
         updateData.notes = notesValue;
-
+        
         // Add to edit history
         if (notesValue) {
           newEditHistory.push({
             id: crypto.randomUUID(),
-            type: "note",
+            type: 'note',
             value: notesValue,
-            source: "manual",
+            source: 'manual',
             date: new Date().toISOString(),
-            user_id: user.id,
+            user_id: user.id
           });
         }
       }
@@ -172,9 +166,9 @@ export function ManualAssessmentSection({
         updateData.updated_at = new Date().toISOString();
 
         const { error: updateError } = await supabase
-          .from("applicants")
+          .from('applicants')
           .update(updateData)
-          .eq("id", candidate.HireSense_applicant_id);
+          .eq('id', candidate.unmask_applicant_id);
 
         if (updateError) {
           throw new Error(`Failed to save assessment: ${updateError.message}`);
@@ -184,7 +178,7 @@ export function ManualAssessmentSection({
         const updatedCandidate = {
           ...candidate,
           score: scoreValue,
-          notes: notesValue,
+          notes: notesValue
         };
 
         if (onUpdate) {
@@ -192,26 +186,23 @@ export function ManualAssessmentSection({
         }
 
         setIsEditing(false);
-        showNotification("success", "Assessment saved and synced to Ashby");
+        showNotification('success', 'Assessment saved and synced to Ashby');
       } else {
         setIsEditing(false);
-        showNotification("info", "No changes to save");
+        showNotification('info', 'No changes to save');
       }
+
     } catch (error) {
-      console.error("Failed to save assessment:", error);
-      showNotification(
-        "error",
-        "Failed to save assessment: " +
-          (error instanceof Error ? error.message : "Unknown error")
-      );
+      console.error('Failed to save assessment:', error);
+      showNotification('error', 'Failed to save assessment: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const hasAssessment =
-    candidate.score !== null ||
-    (candidate.notes && candidate.notes.trim() !== "");
+
+
+  const hasAssessment = candidate.score !== null || (candidate.notes && candidate.notes.trim() !== '');
 
   return (
     <Card className="p-4 mb-6 border-l-4 border-l-blue-500">
@@ -219,21 +210,14 @@ export function ManualAssessmentSection({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h3 className="text-lg font-semibold text-gray-900">
-              Manual Assessment
-            </h3>
+            <h3 className="text-lg font-semibold text-gray-900">Manual Assessment</h3>
             {hasAssessment && (
-              <Badge
-                variant="outline"
-                className="bg-blue-50 text-blue-700 border-blue-200"
-              >
-                {candidate.score !== null
-                  ? `Score: ${candidate.score}`
-                  : "Notes Added"}
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                {candidate.score !== null ? `Score: ${candidate.score}` : 'Notes Added'}
               </Badge>
             )}
           </div>
-
+          
           <div className="flex items-center gap-2">
             {!isEditing ? (
               <Button variant="outline" size="sm" onClick={handleEdit}>
@@ -272,9 +256,7 @@ export function ManualAssessmentSection({
                 min="0"
                 max="100"
                 value={formData.score}
-                onChange={(e) =>
-                  setFormData({ ...formData, score: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, score: e.target.value })}
                 placeholder="Enter score..."
                 className="w-full"
               />
@@ -288,23 +270,20 @@ export function ManualAssessmentSection({
               </div>
             )}
           </div>
+
         </div>
 
         {/* Notes */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Assessment Notes
-            <span className="text-gray-500 text-xs ml-2">
-              (max 1000 characters)
-            </span>
+            <span className="text-gray-500 text-xs ml-2">(max 1000 characters)</span>
           </label>
           {isEditing ? (
             <div className="relative">
               <Textarea
                 value={formData.notes}
-                onChange={(e) =>
-                  setFormData({ ...formData, notes: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Enter your assessment notes..."
                 className="min-h-[100px] resize-none"
                 maxLength={1000}
@@ -316,36 +295,32 @@ export function ManualAssessmentSection({
           ) : (
             <div className="p-3 bg-gray-50 rounded-md min-h-[100px]">
               {candidate.notes ? (
-                <p className="text-gray-900 whitespace-pre-wrap">
-                  {candidate.notes}
-                </p>
+                <p className="text-gray-900 whitespace-pre-wrap">{candidate.notes}</p>
               ) : (
                 <span className="text-gray-500 italic">No notes added</span>
               )}
             </div>
           )}
         </div>
+
       </div>
 
       {/* Notification Toast */}
       {notification && (
         <div className="fixed top-4 right-4 z-50 animate-in fade-in slide-in-from-right duration-300">
-          <div
-            className={`
+          <div className={`
             px-6 py-4 rounded-lg shadow-lg max-w-sm
-            ${
-              notification.type === "success"
-                ? "bg-green-600 text-white"
-                : notification.type === "error"
-                ? "bg-red-600 text-white"
-                : "bg-blue-600 text-white"
+            ${notification.type === 'success' 
+              ? 'bg-green-600 text-white' 
+              : notification.type === 'error'
+              ? 'bg-red-600 text-white'
+              : 'bg-blue-600 text-white'
             }
-          `}
-          >
+          `}>
             <div className="flex items-center gap-3">
-              {notification.type === "success" ? (
+              {notification.type === 'success' ? (
                 <CheckCircle className="h-5 w-5 flex-shrink-0" />
-              ) : notification.type === "error" ? (
+              ) : notification.type === 'error' ? (
                 <AlertTriangle className="h-5 w-5 flex-shrink-0" />
               ) : (
                 <Loader2 className="h-5 w-5 flex-shrink-0 animate-spin" />
