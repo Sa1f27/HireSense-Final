@@ -52,9 +52,9 @@ export interface ATSCandidate {
   updated_at?: string;
   last_synced_at?: string;
   
-  // Integration with unmask
-  unmask_applicant_id?: string | null;
-  unmask_status?: string;
+  // Integration with HireSense
+  HireSense_applicant_id?: string | null;
+  HireSense_status?: string;
   cv_file_id?: string | null;
   
   // Processing status fields (from applicants table)

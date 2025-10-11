@@ -1,18 +1,28 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/contexts/AuthContext';
-import { useAshbyAccess } from '@/lib/ashby/config';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Download, AlertTriangle, Mail, Filter } from 'lucide-react';
-import { ATSCandidatesTable } from './components/ATSCandidatesTable';
-import { ATSPageData, ATSCandidate } from '@/lib/ashby/interfaces';
-import { CandidateFilter } from '@/lib/interfaces/applicant';
-import { SCORE_FILTER_OPTIONS, DEFAULT_SCORE_FILTER, getScoreTierDescription } from '@/lib/scoring';
-import { Tooltip } from '@/components/ui/tooltip';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useAshbyAccess } from "@/lib/ashby/config";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { RefreshCw, Download, AlertTriangle, Mail, Filter } from "lucide-react";
+import { ATSCandidatesTable } from "./components/ATSCandidatesTable";
+import { ATSPageData, ATSCandidate } from "@/lib/ashby/interfaces";
+import { CandidateFilter } from "@/lib/interfaces/applicant";
+import {
+  SCORE_FILTER_OPTIONS,
+  DEFAULT_SCORE_FILTER,
+  getScoreTierDescription,
+} from "@/lib/scoring";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export default function ATSPage() {
   const router = useRouter();
@@ -25,7 +35,7 @@ export default function ATSPage() {
   const [filter, setFilter] = useState<CandidateFilter>({
     minScore: DEFAULT_SCORE_FILTER,
     hasLinkedIn: undefined,
-    hasCV: undefined
+    hasCV: undefined,
   });
   const [showFilters, setShowFilters] = useState(false);
   const [fetchLimit, setFetchLimit] = useState(10); // Default fetch limit - matches auto-sync
@@ -33,7 +43,7 @@ export default function ATSPage() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, authLoading, router]);
 
@@ -42,26 +52,26 @@ export default function ATSPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/ashby/candidates', {
-        method: 'GET',
+      const response = await fetch("/api/ashby/candidates", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to fetch candidates');
+        throw new Error(result.error || "Failed to fetch candidates");
       }
 
       setData(result);
-      
+
       if (result.auto_synced && result.sync_results) {
-        console.log('🔄 Auto-synced candidates:', result.sync_results);
+        console.log("🔄 Auto-synced candidates:", result.sync_results);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -79,28 +89,28 @@ export default function ATSPage() {
     setError(null);
 
     try {
-      const response = await fetch('/api/ashby/candidates', {
-        method: 'POST',
+      const response = await fetch("/api/ashby/candidates", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          limit: fetchLimit 
+        body: JSON.stringify({
+          limit: fetchLimit,
         }),
       });
 
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to refresh candidates');
+        throw new Error(result.error || "Failed to refresh candidates");
       }
 
-      console.log('🔄 Full refresh completed:', result);
-      
+      console.log("🔄 Full refresh completed:", result);
+
       // Fetch updated candidates
       await fetchCandidates();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setRefreshing(false);
     }
@@ -108,14 +118,14 @@ export default function ATSPage() {
 
   const handleCandidateUpdate = (updatedCandidate: ATSCandidate) => {
     // Update the candidate in the local data state using functional update to prevent race conditions
-    setData(currentData => {
+    setData((currentData) => {
       if (!currentData?.candidates) {
         return currentData;
       }
 
       const candidateId = updatedCandidate.id;
-      
-      const updatedCandidates = currentData.candidates.map(candidate => {
+
+      const updatedCandidates = currentData.candidates.map((candidate) => {
         if (candidate.id === candidateId) {
           return { ...candidate, ...updatedCandidate };
         }
@@ -123,18 +133,20 @@ export default function ATSPage() {
       });
 
       // Verify we actually found and updated a candidate
-      const wasUpdated = updatedCandidates.some(candidate => 
-        candidate.id === candidateId && 
-        (candidate.score === updatedCandidate.score || candidate.notes === updatedCandidate.notes)
+      const wasUpdated = updatedCandidates.some(
+        (candidate) =>
+          candidate.id === candidateId &&
+          (candidate.score === updatedCandidate.score ||
+            candidate.notes === updatedCandidate.notes)
       );
 
       if (wasUpdated) {
         return {
           ...currentData,
-          candidates: updatedCandidates
+          candidates: updatedCandidates,
         };
       } else {
-        console.warn('Candidate not found for update:', candidateId);
+        console.warn("Candidate not found for update:", candidateId);
         return currentData;
       }
     });
@@ -143,24 +155,24 @@ export default function ATSPage() {
   // Filter candidates based on score and data completeness
   const getFilteredCandidates = () => {
     if (!data?.candidates) return [];
-    
-    return data.candidates.filter(candidate => {
+
+    return data.candidates.filter((candidate) => {
       // Filter by score (data completeness or AI analysis score)
       const score = candidate.score || 10; // Default to 10 if not provided
       if (score < filter.minScore) return false;
-      
+
       // Filter by LinkedIn data presence
       if (filter.hasLinkedIn !== undefined) {
         const hasLinkedIn = !!candidate.linkedin_url;
         if (hasLinkedIn !== filter.hasLinkedIn) return false;
       }
-      
+
       // Filter by CV data presence
       if (filter.hasCV !== undefined) {
         const hasCV = !!candidate.has_resume;
         if (hasCV !== filter.hasCV) return false;
       }
-      
+
       return true;
     });
   };
@@ -171,41 +183,45 @@ export default function ATSPage() {
     if (!filteredCandidates.length) return;
 
     const headers = [
-      'Name',
-      'Email', 
-      'LinkedIn URL',
-      'Has Resume',
-      'Base Score',
-      'Applicant ID',
-      'Created Date',
-      'Tags',
-      'Unmask Status',
-      'Position',
-      'Company'
+      "Name",
+      "Email",
+      "LinkedIn URL",
+      "Has Resume",
+      "Base Score",
+      "Applicant ID",
+      "Created Date",
+      "Tags",
+      "HireSense Status",
+      "Position",
+      "Company",
     ];
 
     const csvContent = [
-      headers.join(','),
-      ...filteredCandidates.map(candidate => [
-        `"${candidate.name}"`,
-        `"${candidate.email}"`,
-        `"${candidate.linkedin_url || ''}"`,
-        candidate.has_resume ? 'Yes' : 'No',
-        candidate.score || 10,
-        candidate.id,
-        candidate.created_at,
-        `"${candidate.tags.join('; ')}"`,
-        `"${candidate.unmask_status || 'Not processed'}"`,
-        `"${candidate.position || ''}"`,
-        `"${candidate.company || ''}"`
-      ].join(','))
-    ].join('\n');
+      headers.join(","),
+      ...filteredCandidates.map((candidate) =>
+        [
+          `"${candidate.name}"`,
+          `"${candidate.email}"`,
+          `"${candidate.linkedin_url || ""}"`,
+          candidate.has_resume ? "Yes" : "No",
+          candidate.score || 10,
+          candidate.id,
+          candidate.created_at,
+          `"${candidate.tags.join("; ")}"`,
+          `"${candidate.HireSense_status || "Not processed"}"`,
+          `"${candidate.position || ""}"`,
+          `"${candidate.company || ""}"`,
+        ].join(",")
+      ),
+    ].join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `ats-candidates-filtered-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `ats-candidates-filtered-${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -241,17 +257,24 @@ export default function ATSPage() {
                 ATS Integration Required
               </h2>
               <p className="text-gray-600 mb-6">
-                To access the ATS dashboard, you need to enable the integration with your applicant tracking system.
+                To access the ATS dashboard, you need to enable the integration
+                with your applicant tracking system.
               </p>
               <Button
-                onClick={() => window.open('mailto:support@unmask.click?subject=Enable ATS Integration', '_blank')}
+                onClick={() =>
+                  window.open(
+                    "mailto:support@HireSense.click?subject=Enable ATS Integration",
+                    "_blank"
+                  )
+                }
                 className="w-full"
               >
                 <Mail className="h-4 w-4 mr-2" />
-                Email support@unmask.click
+                Email support@HireSense.click
               </Button>
               <p className="text-sm text-gray-500 mt-4">
-                Our team will help you set up the integration and configure your API access.
+                Our team will help you set up the integration and configure your
+                API access.
               </p>
             </CardContent>
           </Card>
@@ -267,7 +290,9 @@ export default function ATSPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900">ATS Integration</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                ATS Integration
+              </h1>
               <p className="text-gray-600 mt-2">
                 View and analyze candidates from your ATS system
               </p>
@@ -295,7 +320,10 @@ export default function ATSPage() {
               </Button>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-2">
-                  <label htmlFor="fetch-limit" className="text-sm text-gray-600 whitespace-nowrap">
+                  <label
+                    htmlFor="fetch-limit"
+                    className="text-sm text-gray-600 whitespace-nowrap"
+                  >
                     Fetch limit:
                   </label>
                   <input
@@ -304,14 +332,28 @@ export default function ATSPage() {
                     min="1"
                     max="1000"
                     value={fetchLimit}
-                    onChange={(e) => setFetchLimit(Math.max(1, Math.min(1000, parseInt(e.target.value) || 10)))}
+                    onChange={(e) =>
+                      setFetchLimit(
+                        Math.max(
+                          1,
+                          Math.min(1000, parseInt(e.target.value) || 10)
+                        )
+                      )
+                    }
                     className="w-20 px-2 py-1 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     disabled={loading || refreshing}
                   />
                 </div>
-                <Button onClick={handleRefresh} disabled={loading || refreshing}>
-                  <RefreshCw className={`h-4 w-4 mr-2 ${(loading || refreshing) ? 'animate-spin' : ''}`} />
-                  {refreshing ? 'Refreshing All...' : 'Refresh All'}
+                <Button
+                  onClick={handleRefresh}
+                  disabled={loading || refreshing}
+                >
+                  <RefreshCw
+                    className={`h-4 w-4 mr-2 ${
+                      loading || refreshing ? "animate-spin" : ""
+                    }`}
+                  />
+                  {refreshing ? "Refreshing All..." : "Refresh All"}
                 </Button>
               </div>
             </div>
@@ -335,10 +377,12 @@ export default function ATSPage() {
                   </label>
                   <select
                     value={filter.minScore}
-                    onChange={(e) => setFilter({ ...filter, minScore: Number(e.target.value) })}
+                    onChange={(e) =>
+                      setFilter({ ...filter, minScore: Number(e.target.value) })
+                    }
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                   >
-                    {SCORE_FILTER_OPTIONS.map(option => (
+                    {SCORE_FILTER_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {option.label}
                       </option>
@@ -348,17 +392,26 @@ export default function ATSPage() {
                     {getScoreTierDescription(filter.minScore)}
                   </p>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     LinkedIn Data
                   </label>
                   <select
-                    value={filter.hasLinkedIn === undefined ? 'all' : filter.hasLinkedIn.toString()}
-                    onChange={(e) => setFilter({ 
-                      ...filter, 
-                      hasLinkedIn: e.target.value === 'all' ? undefined : e.target.value === 'true' 
-                    })}
+                    value={
+                      filter.hasLinkedIn === undefined
+                        ? "all"
+                        : filter.hasLinkedIn.toString()
+                    }
+                    onChange={(e) =>
+                      setFilter({
+                        ...filter,
+                        hasLinkedIn:
+                          e.target.value === "all"
+                            ? undefined
+                            : e.target.value === "true",
+                      })
+                    }
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                   >
                     <option value="all">All candidates</option>
@@ -366,17 +419,26 @@ export default function ATSPage() {
                     <option value="false">Without LinkedIn</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Resume Data
                   </label>
                   <select
-                    value={filter.hasCV === undefined ? 'all' : filter.hasCV.toString()}
-                    onChange={(e) => setFilter({ 
-                      ...filter, 
-                      hasCV: e.target.value === 'all' ? undefined : e.target.value === 'true' 
-                    })}
+                    value={
+                      filter.hasCV === undefined
+                        ? "all"
+                        : filter.hasCV.toString()
+                    }
+                    onChange={(e) =>
+                      setFilter({
+                        ...filter,
+                        hasCV:
+                          e.target.value === "all"
+                            ? undefined
+                            : e.target.value === "true",
+                      })
+                    }
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                   >
                     <option value="all">All candidates</option>
@@ -385,19 +447,22 @@ export default function ATSPage() {
                   </select>
                 </div>
               </div>
-              
+
               <div className="mt-4 flex items-center gap-2">
                 <Badge variant="outline">
-                  Showing {filteredCandidates.length} of {data?.candidates?.length || 0} candidates
+                  Showing {filteredCandidates.length} of{" "}
+                  {data?.candidates?.length || 0} candidates
                 </Badge>
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setFilter({
-                    minScore: DEFAULT_SCORE_FILTER,
-                    hasLinkedIn: undefined,
-                    hasCV: undefined
-                  })}
+                  onClick={() =>
+                    setFilter({
+                      minScore: DEFAULT_SCORE_FILTER,
+                      hasLinkedIn: undefined,
+                      hasCV: undefined,
+                    })
+                  }
                 >
                   Reset Filters
                 </Button>
@@ -411,19 +476,47 @@ export default function ATSPage() {
           <div className="mb-6">
             <div className="flex items-center gap-6 text-sm text-gray-600">
               <Tooltip content="Total candidates synced from Ashby">
-                <span className="cursor-help"><strong>{data.stored_count}</strong> total</span>
+                <span className="cursor-help">
+                  <strong>{data.stored_count}</strong> total
+                </span>
               </Tooltip>
               <Tooltip content="Number of candidates currently visible after applying filters">
-                <span className="cursor-help"><strong>{filteredCandidates.length}</strong> showing</span>
+                <span className="cursor-help">
+                  <strong>{filteredCandidates.length}</strong> showing
+                </span>
               </Tooltip>
               <Tooltip content="Candidates with LinkedIn + CV data ready for analysis">
-                <span className="cursor-help"><strong>{filteredCandidates.filter(c => c.linkedin_url && c.has_resume).length}</strong> complete data</span>
+                <span className="cursor-help">
+                  <strong>
+                    {
+                      filteredCandidates.filter(
+                        (c) => c.linkedin_url && c.has_resume
+                      ).length
+                    }
+                  </strong>{" "}
+                  complete data
+                </span>
               </Tooltip>
               <Tooltip content="Candidates that have been analyzed by AI">
-                <span className="cursor-help"><strong>{filteredCandidates.filter(c => c.ai_status === 'ready' && (c.analysis || c.score)).length}</strong> AI analyzed</span>
+                <span className="cursor-help">
+                  <strong>
+                    {
+                      filteredCandidates.filter(
+                        (c) =>
+                          c.ai_status === "ready" && (c.analysis || c.score)
+                      ).length
+                    }
+                  </strong>{" "}
+                  AI analyzed
+                </span>
               </Tooltip>
               <Tooltip content="When candidates were last synced from your Ashby system">
-                <span className="cursor-help ml-auto">Last sync: {data.last_sync ? new Date(data.last_sync).toLocaleString() : 'Never'}</span>
+                <span className="cursor-help ml-auto">
+                  Last sync:{" "}
+                  {data.last_sync
+                    ? new Date(data.last_sync).toLocaleString()
+                    : "Never"}
+                </span>
               </Tooltip>
             </div>
           </div>
@@ -463,12 +556,11 @@ export default function ATSPage() {
 
         {/* Candidates Table */}
         {data && !loading && (
-                  <ATSCandidatesTable 
-          candidates={filteredCandidates} 
-          onCandidateUpdate={handleCandidateUpdate}
-        />
+          <ATSCandidatesTable
+            candidates={filteredCandidates}
+            onCandidateUpdate={handleCandidateUpdate}
+          />
         )}
-
       </div>
     </div>
   );

@@ -128,7 +128,7 @@ export default function Home() {
         <div className="hidden z-[11] lg:block absolute -bottom-[11.5rem] left-1/2 transform -translate-x-1/2 z-[1] max-w-2xl pointer-events-none">
           <Image
             src="/screen.png"
-            alt="Unmask UI Preview"
+            alt="HireSense UI Preview"
             width={768}
             height={432}
             className="w-full h-auto rounded-lg"

@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     while (retries > 0 && !candidate) {
       const { data, error } = await supabase
         .from('ashby_candidates')
-        .select('*, user_id, unmask_applicant_id')
+        .select('*, user_id, HireSense_applicant_id')
         .eq('ashby_id', candidateId)
         .maybeSingle(); // Use maybeSingle to avoid error on no rows
 
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     
     // For shared_file mode, we need an applicant ID
     if (mode !== 'file_only') {
-      const targetApplicantId = applicantId || candidate.unmask_applicant_id;
+      const targetApplicantId = applicantId || candidate.HireSense_applicant_id;
       
       if (!targetApplicantId) {
         return NextResponse.json(
@@ -193,7 +193,7 @@ export async function POST(request: NextRequest) {
 
     if (mode === 'shared_file') {
       // Shared file mode: Update both ashby_candidate and applicant with same file reference
-      const targetApplicantId = applicantId || candidate.unmask_applicant_id;
+      const targetApplicantId = applicantId || candidate.HireSense_applicant_id;
       
       // Update ashby_candidates with the file reference
       const { error: ashbyUpdateError } = await supabase
@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
 
     } else {
       // Legacy mode: Update existing applicant only
-      const targetApplicantId = applicantId || candidate.unmask_applicant_id;
+      const targetApplicantId = applicantId || candidate.HireSense_applicant_id;
       const { error: updateError } = await supabase
         .from('applicants')
         .update({

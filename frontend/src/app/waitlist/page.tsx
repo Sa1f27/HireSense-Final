@@ -22,7 +22,7 @@ function WaitlistContent() {
     if (emailParam) {
       const decodedEmail = decodeURIComponent(emailParam);
       setEmail(decodedEmail);
-      
+
       // Submit email to API on arrival
       submitEmailToWaitlist(decodedEmail);
     } else {
@@ -33,10 +33,10 @@ function WaitlistContent() {
 
   const submitEmailToWaitlist = async (emailAddress: string) => {
     try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email: emailAddress }),
       });
@@ -45,10 +45,10 @@ function WaitlistContent() {
         const data = await response.json();
         setRecordId(data.id);
       } else {
-        console.error('Failed to submit email to waitlist');
+        console.error("Failed to submit email to waitlist");
       }
     } catch (error) {
-      console.error('Error submitting email to waitlist:', error);
+      console.error("Error submitting email to waitlist:", error);
     } finally {
       setIsInitializing(false);
     }
@@ -56,37 +56,37 @@ function WaitlistContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!recordId) {
-      console.error('No record ID available for update');
+      console.error("No record ID available for update");
       return;
     }
 
     setIsLoading(true);
-    
+
     try {
-      const response = await fetch('/api/waitlist', {
-        method: 'POST',
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           id: recordId,
-          email, 
-          name, 
-          company, 
-          employees, 
-          industry 
+          email,
+          name,
+          company,
+          employees,
+          industry,
         }),
       });
 
       if (response.ok) {
         setIsSubmitted(true);
       } else {
-        throw new Error('Failed to submit details');
+        throw new Error("Failed to submit details");
       }
     } catch (error) {
-      console.error('Error submitting waitlist details:', error);
+      console.error("Error submitting waitlist details:", error);
       // You might want to show an error message here
     } finally {
       setIsLoading(false);
@@ -101,7 +101,7 @@ function WaitlistContent() {
     "101-250",
     "251-500",
     "501-1000",
-    "1000+"
+    "1000+",
   ];
 
   const industryOptions = [
@@ -115,20 +115,21 @@ function WaitlistContent() {
     "Media & Content Tech (e.g. streaming, publishing, generative content)",
     "Cybersecurity",
     "Hardware / IoT / Robotics",
-    "Other"
+    "Other",
   ];
 
   return (
     <main className="flex flex-col items-center w-full min-h-screen bg-gradient-to-t from-pink-100 to-pink-200 px-4 relative overflow-hidden">
       {/* Background gradient blob */}
-      <div 
-        aria-hidden="true" 
+      <div
+        aria-hidden="true"
         className="absolute inset-x-0 top-1/2 transform -translate-y-1/2 overflow-hidden blur-3xl"
       >
-        <div 
+        <div
           style={{
-            clipPath: "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"
-          }} 
+            clipPath:
+              "polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)",
+          }}
           className="relative left-1/2 aspect-[1155/678] w-96 -translate-x-1/2 bg-gradient-to-tr from-pink-500 to-pink-600 opacity-30 sm:w-[36rem] md:w-[72rem] animate-pulse"
         />
       </div>
@@ -148,10 +149,13 @@ function WaitlistContent() {
 
       {/* Main Content */}
       <section className="w-full max-w-lg mt-8 mb-12 relative z-10">
-        <div className="bg-white/15 backdrop-blur-lg rounded-2xl border border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-8" style={{ 
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)'
-        }}>
+        <div
+          className="bg-white/15 backdrop-blur-lg rounded-2xl border border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.4)] p-8"
+          style={{
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+          }}
+        >
           {isInitializing ? (
             <div className="flex flex-col items-center text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500 mb-4"></div>
@@ -164,7 +168,8 @@ function WaitlistContent() {
                 Welcome to the waitlist!
               </h2>
               <p className="text-white/80 mb-6">
-                Thanks for providing your details. We&apos;ll be in touch soon with early access to Unmask.
+                Thanks for providing your details. We&apos;ll be in touch soon
+                with early access to HireSense.
               </p>
               <button
                 onClick={() => router.push("/")}
@@ -195,10 +200,10 @@ function WaitlistContent() {
                     value={email}
                     readOnly
                     className="w-full px-3 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400/50 transition-all text-base"
-                    style={{ 
-                      minHeight: '40px',
-                      WebkitAppearance: 'none',
-                      appearance: 'none'
+                    style={{
+                      minHeight: "40px",
+                      WebkitAppearance: "none",
+                      appearance: "none",
                     }}
                   />
                 </div>
@@ -215,10 +220,10 @@ function WaitlistContent() {
                     required
                     placeholder="Your full name"
                     className="w-full px-3 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400/50 transition-all text-base"
-                    style={{ 
-                      minHeight: '40px',
-                      WebkitAppearance: 'none',
-                      appearance: 'none'
+                    style={{
+                      minHeight: "40px",
+                      WebkitAppearance: "none",
+                      appearance: "none",
                     }}
                   />
                 </div>
@@ -235,10 +240,10 @@ function WaitlistContent() {
                     required
                     placeholder="Your company name"
                     className="w-full px-3 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400/50 transition-all text-base"
-                    style={{ 
-                      minHeight: '40px',
-                      WebkitAppearance: 'none',
-                      appearance: 'none'
+                    style={{
+                      minHeight: "40px",
+                      WebkitAppearance: "none",
+                      appearance: "none",
                     }}
                   />
                 </div>
@@ -253,15 +258,21 @@ function WaitlistContent() {
                     onChange={(e) => setEmployees(e.target.value)}
                     required
                     className="w-full px-3 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400/50 transition-all appearance-none text-base"
-                    style={{ 
-                      minHeight: '40px',
-                      WebkitAppearance: 'none',
-                      appearance: 'none'
+                    style={{
+                      minHeight: "40px",
+                      WebkitAppearance: "none",
+                      appearance: "none",
                     }}
                   >
-                    <option value="" className="bg-zinc-900 text-white">Select company size</option>
+                    <option value="" className="bg-zinc-900 text-white">
+                      Select company size
+                    </option>
                     {employeeOptions.map((option) => (
-                      <option key={option} value={option} className="bg-zinc-900 text-white">
+                      <option
+                        key={option}
+                        value={option}
+                        className="bg-zinc-900 text-white"
+                      >
                         {option} {option === "1" ? "employee" : "employees"}
                       </option>
                     ))}
@@ -278,15 +289,21 @@ function WaitlistContent() {
                     onChange={(e) => setIndustry(e.target.value)}
                     required
                     className="w-full px-3 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-pink-400/50 focus:border-pink-400/50 transition-all appearance-none text-base"
-                    style={{ 
-                      minHeight: '40px',
-                      WebkitAppearance: 'none',
-                      appearance: 'none'
+                    style={{
+                      minHeight: "40px",
+                      WebkitAppearance: "none",
+                      appearance: "none",
                     }}
                   >
-                    <option value="" className="bg-zinc-900 text-white">Select your industry</option>
+                    <option value="" className="bg-zinc-900 text-white">
+                      Select your industry
+                    </option>
                     {industryOptions.map((option) => (
-                      <option key={option} value={option} className="bg-zinc-900 text-white">
+                      <option
+                        key={option}
+                        value={option}
+                        className="bg-zinc-900 text-white"
+                      >
                         {option}
                       </option>
                     ))}
@@ -299,10 +316,10 @@ function WaitlistContent() {
                     type="submit"
                     disabled={isLoading}
                     className="w-full px-6 py-2.5 text-base font-semibold text-white bg-black hover:bg-pink-500 hover:shadow-[0_0_20px_rgba(255,105,180,0.7)] transition-all duration-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ 
-                      minHeight: '44px',
-                      WebkitAppearance: 'none',
-                      appearance: 'none'
+                    style={{
+                      minHeight: "44px",
+                      WebkitAppearance: "none",
+                      appearance: "none",
                     }}
                   >
                     {isLoading ? "Submitting..." : "Complete Registration"}
@@ -319,14 +336,16 @@ function WaitlistContent() {
 
 export default function WaitlistDetailsPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4 mx-auto"></div>
-          <p className="text-gray-600">Loading...</p>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-4 mx-auto"></div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <WaitlistContent />
     </Suspense>
   );

@@ -1,23 +1,28 @@
-import React from 'react';
-import { Applicant } from '@/lib/interfaces/applicant';
-import { Check, Clock, Loader2, AlertCircle } from 'lucide-react';
+import React from "react";
+import { Applicant } from "@/lib/interfaces/applicant";
+import { Check, Clock, Loader2, AlertCircle } from "lucide-react";
 
 interface ProcessingLoaderProps {
-  status: 'uploading' | 'processing' | 'analyzing';
+  status: "uploading" | "processing" | "analyzing";
   fileName?: string;
   applicant?: Applicant;
 }
 
 export default function ProcessingLoader({ applicant }: ProcessingLoaderProps) {
-
   const getStepStatus = (stepStatus: string) => {
     switch (stepStatus) {
-      case 'ready': return 'completed';
-      case 'processing': return 'active';
-      case 'error': return 'error';
-      case 'not_provided': return 'skipped';
-      case 'pending': return 'pending';
-      default: return 'pending';
+      case "ready":
+        return "completed";
+      case "processing":
+        return "active";
+      case "error":
+        return "error";
+      case "not_provided":
+        return "skipped";
+      case "pending":
+        return "pending";
+      default:
+        return "pending";
     }
   };
 
@@ -27,7 +32,7 @@ export default function ProcessingLoader({ applicant }: ProcessingLoaderProps) {
         {/* Clean Status Text */}
         <div className="text-center space-y-3">
           <h2 className="text-2xl font-bold text-gray-900">
-            Unmasking Profile
+            HireSenseing Profile
           </h2>
         </div>
 
@@ -38,7 +43,8 @@ export default function ProcessingLoader({ applicant }: ProcessingLoaderProps) {
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-2">
                 {/* CV Processing Step */}
-                {(applicant.cv_file_id || applicant.cv_status !== 'pending') && (
+                {(applicant.cv_file_id ||
+                  applicant.cv_status !== "pending") && (
                   <ProcessingStep
                     label="CV Analysis"
                     status={getStepStatus(applicant.cv_status)}
@@ -47,7 +53,8 @@ export default function ProcessingLoader({ applicant }: ProcessingLoaderProps) {
                 )}
 
                 {/* LinkedIn Processing Step */}
-                {(applicant.linkedin_url || applicant.li_status !== 'pending') && (
+                {(applicant.linkedin_url ||
+                  applicant.li_status !== "pending") && (
                   <ProcessingStep
                     label="LinkedIn Analysis"
                     status={getStepStatus(applicant.li_status)}
@@ -56,7 +63,8 @@ export default function ProcessingLoader({ applicant }: ProcessingLoaderProps) {
                 )}
 
                 {/* GitHub Processing Step */}
-                {(applicant.github_url || applicant.gh_status !== 'pending') && (
+                {(applicant.github_url ||
+                  applicant.gh_status !== "pending") && (
                   <ProcessingStep
                     label="GitHub Analysis"
                     status={getStepStatus(applicant.gh_status)}
@@ -82,7 +90,7 @@ export default function ProcessingLoader({ applicant }: ProcessingLoaderProps) {
         )}
 
         {/* Status Message */}
-        {applicant?.status === 'failed' && (
+        {applicant?.status === "failed" && (
           <p className="text-center text-sm text-red-600">
             Something went wrong. Please try again.
           </p>
@@ -95,23 +103,28 @@ export default function ProcessingLoader({ applicant }: ProcessingLoaderProps) {
 // Processing Step Component
 interface ProcessingStepProps {
   label: string;
-  status: 'pending' | 'active' | 'completed' | 'error' | 'skipped';
+  status: "pending" | "active" | "completed" | "error" | "skipped";
   compact?: boolean;
   isDependent?: boolean;
 }
 
-function ProcessingStep({ label, status, compact = false, isDependent = false }: ProcessingStepProps) {
+function ProcessingStep({
+  label,
+  status,
+  compact = false,
+  isDependent = false,
+}: ProcessingStepProps) {
   const getIcon = () => {
     switch (status) {
-      case 'completed':
+      case "completed":
         return <Check className="w-4 h-4 text-emerald-600" />;
-      case 'active':
+      case "active":
         return <Loader2 className="w-4 h-4 text-blue-600 animate-spin" />;
-      case 'error':
+      case "error":
         return <AlertCircle className="w-4 h-4 text-red-600" />;
-      case 'skipped':
+      case "skipped":
         return <span className="w-4 h-4 text-gray-300 text-xs">−</span>;
-      case 'pending':
+      case "pending":
         return <Clock className="w-4 h-4 text-gray-400" />;
     }
   };
@@ -119,71 +132,73 @@ function ProcessingStep({ label, status, compact = false, isDependent = false }:
   const getStatusColor = () => {
     if (isDependent) {
       switch (status) {
-        case 'completed':
-          return 'border-indigo-200 bg-indigo-50';
-        case 'active':
-          return 'border-indigo-200 bg-indigo-50';
-        case 'error':
-          return 'border-red-200 bg-red-50';
-        case 'pending':
-          return 'border-gray-300 bg-gray-100';
+        case "completed":
+          return "border-indigo-200 bg-indigo-50";
+        case "active":
+          return "border-indigo-200 bg-indigo-50";
+        case "error":
+          return "border-red-200 bg-red-50";
+        case "pending":
+          return "border-gray-300 bg-gray-100";
         default:
-          return 'border-gray-300 bg-gray-100';
+          return "border-gray-300 bg-gray-100";
       }
     }
-    
+
     switch (status) {
-      case 'completed':
-        return 'border-emerald-200 bg-emerald-50';
-      case 'active':
-        return 'border-blue-200 bg-blue-50';
-      case 'error':
-        return 'border-red-200 bg-red-50';
-      case 'skipped':
-        return 'border-gray-200 bg-gray-100 opacity-60';
-      case 'pending':
-        return 'border-gray-200 bg-gray-50';
+      case "completed":
+        return "border-emerald-200 bg-emerald-50";
+      case "active":
+        return "border-blue-200 bg-blue-50";
+      case "error":
+        return "border-red-200 bg-red-50";
+      case "skipped":
+        return "border-gray-200 bg-gray-100 opacity-60";
+      case "pending":
+        return "border-gray-200 bg-gray-50";
     }
   };
 
   const getTextColor = () => {
     if (isDependent) {
       switch (status) {
-        case 'completed':
-          return 'text-indigo-700';
-        case 'active':
-          return 'text-indigo-700';
-        case 'error':
-          return 'text-red-700';
-        case 'pending':
-          return 'text-gray-500';
+        case "completed":
+          return "text-indigo-700";
+        case "active":
+          return "text-indigo-700";
+        case "error":
+          return "text-red-700";
+        case "pending":
+          return "text-gray-500";
         default:
-          return 'text-gray-500';
+          return "text-gray-500";
       }
     }
-    
+
     switch (status) {
-      case 'completed':
-        return 'text-emerald-700';
-      case 'active':
-        return 'text-blue-700';
-      case 'error':
-        return 'text-red-700';
-      case 'skipped':
-        return 'text-gray-400';
-      case 'pending':
-        return 'text-gray-500';
+      case "completed":
+        return "text-emerald-700";
+      case "active":
+        return "text-blue-700";
+      case "error":
+        return "text-red-700";
+      case "skipped":
+        return "text-gray-400";
+      case "pending":
+        return "text-gray-500";
     }
   };
 
   return (
-    <div className={`border rounded-lg transition-all duration-300 ${getStatusColor()} ${
-      compact ? 'p-2' : 'p-3'
-    } ${isDependent ? 'shadow-sm' : ''}`}>
+    <div
+      className={`border rounded-lg transition-all duration-300 ${getStatusColor()} ${
+        compact ? "p-2" : "p-3"
+      } ${isDependent ? "shadow-sm" : ""}`}
+    >
       <div className="flex items-center gap-3">
         {getIcon()}
         <span className={`text-xs font-medium ${getTextColor()}`}>{label}</span>
-        {status === 'skipped' && (
+        {status === "skipped" && (
           <span className="text-xs text-gray-400 ml-auto">skipped</span>
         )}
       </div>

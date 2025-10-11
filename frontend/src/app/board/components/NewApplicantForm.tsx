@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { useApplicants } from '@/lib/contexts/ApplicantContext';
+import { useState, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { useApplicants } from "@/lib/contexts/ApplicantContext";
 
 interface NewApplicantFormProps {
   onSuccess?: (applicantId: string) => void;
@@ -18,7 +18,15 @@ interface DropZoneProps {
   required?: boolean;
 }
 
-function DropZone({ onDrop, accept, label, description, file, disabled = false, required = false }: DropZoneProps) {
+function DropZone({
+  onDrop,
+  accept,
+  label,
+  description,
+  file,
+  disabled = false,
+  required = false,
+}: DropZoneProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -72,13 +80,18 @@ function DropZone({ onDrop, accept, label, description, file, disabled = false, 
         onDrop={handleDrop}
         className={`
           relative border-2 border-dashed p-4 transition-all duration-200 cursor-pointer rounded-md flex-1 flex items-center justify-center
-          ${isDragOver && !disabled
-            ? 'border-zinc-400 bg-zinc-50'
-            : file
-              ? 'border-green-300 bg-green-50'
-              : 'border-zinc-300 bg-zinc-50'
+          ${
+            isDragOver && !disabled
+              ? "border-zinc-400 bg-zinc-50"
+              : file
+              ? "border-green-300 bg-green-50"
+              : "border-zinc-300 bg-zinc-50"
           }
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-zinc-400 hover:bg-zinc-50'}
+          ${
+            disabled
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:border-zinc-400 hover:bg-zinc-50"
+          }
         `}
       >
         <input
@@ -94,25 +107,51 @@ function DropZone({ onDrop, accept, label, description, file, disabled = false, 
           {file ? (
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
               </div>
               <div className="text-left">
-                <p className="text-sm font-medium text-green-700">{file.name}</p>
-                <p className="text-xs text-green-600">File uploaded successfully</p>
+                <p className="text-sm font-medium text-green-700">
+                  {file.name}
+                </p>
+                <p className="text-xs text-green-600">
+                  File uploaded successfully
+                </p>
               </div>
             </div>
           ) : (
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-zinc-100 rounded-full flex items-center justify-center">
-                <svg className="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                <svg
+                  className="w-4 h-4 text-zinc-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                  />
                 </svg>
               </div>
               <div className="text-left">
                 <p className="text-sm font-medium text-zinc-700">
-                  {isDragOver ? 'Drop file here' : 'Drop file here or click to browse'}
+                  {isDragOver
+                    ? "Drop file here"
+                    : "Drop file here or click to browse"}
                 </p>
                 <p className="text-xs text-zinc-500">{description}</p>
               </div>
@@ -129,8 +168,8 @@ export function NewApplicantForm({ onSuccess }: NewApplicantFormProps) {
 
   // Form state
   const [cvFile, setCvFile] = useState<File | null>(null);
-  const [linkedinUrl, setLinkedinUrl] = useState<string>('');
-  const [githubUrl, setGithubUrl] = useState<string>('');
+  const [linkedinUrl, setLinkedinUrl] = useState<string>("");
+  const [githubUrl, setGithubUrl] = useState<string>("");
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -138,14 +177,14 @@ export function NewApplicantForm({ onSuccess }: NewApplicantFormProps) {
 
   const resetForm = () => {
     setCvFile(null);
-    setLinkedinUrl('');
-    setGithubUrl('');
+    setLinkedinUrl("");
+    setGithubUrl("");
     setError(null);
   };
 
   const handleCreateCandidate = async () => {
     if (!cvFile && !linkedinUrl.trim()) {
-      setError('Please provide either a CV file or LinkedIn profile URL');
+      setError("Please provide either a CV file or LinkedIn profile URL");
       return;
     }
 
@@ -156,7 +195,7 @@ export function NewApplicantForm({ onSuccess }: NewApplicantFormProps) {
       const applicantId = await createApplicant({
         cvFile: cvFile || undefined,
         linkedinUrl: linkedinUrl.trim() || undefined,
-        githubUrl: githubUrl.trim() || undefined
+        githubUrl: githubUrl.trim() || undefined,
       });
 
       if (applicantId) {
@@ -165,18 +204,20 @@ export function NewApplicantForm({ onSuccess }: NewApplicantFormProps) {
         // Call success callback if provided
         onSuccess?.(applicantId);
       } else {
-        setError('Failed to create applicant. Please try again.');
+        setError("Failed to create applicant. Please try again.");
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      const errorMessage =
+        err instanceof Error ? err.message : "Unknown error occurred";
       setError(errorMessage);
-      console.error('Failed to create applicant:', err);
+      console.error("Failed to create applicant:", err);
     } finally {
       setIsCreating(false);
     }
   };
 
-  const isFormValid = (cvFile || linkedinUrl.trim()) && !isCreating && !isLoading;
+  const isFormValid =
+    (cvFile || linkedinUrl.trim()) && !isCreating && !isLoading;
 
   return (
     <div className="bg-white">
@@ -202,7 +243,8 @@ export function NewApplicantForm({ onSuccess }: NewApplicantFormProps) {
                 {/* LinkedIn URL */}
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-zinc-900">
-                    LinkedIn {!cvFile ? <span className="text-red-500">*</span> : null}
+                    LinkedIn{" "}
+                    {!cvFile ? <span className="text-red-500">*</span> : null}
                   </label>
                   <input
                     type="url"
@@ -216,7 +258,9 @@ export function NewApplicantForm({ onSuccess }: NewApplicantFormProps) {
 
                 {/* GitHub URL Input */}
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-zinc-900">GitHub</label>
+                  <label className="text-sm font-medium text-zinc-900">
+                    GitHub
+                  </label>
                   <input
                     type="url"
                     value={githubUrl}
@@ -245,13 +289,15 @@ export function NewApplicantForm({ onSuccess }: NewApplicantFormProps) {
               size="lg"
               className={`w-full shadow-sm text-lg font-medium px-8 py-3 transition-all duration-200 ${
                 isFormValid
-                  ? 'bg-zinc-900 hover:bg-zinc-800 text-white'
-                  : 'bg-zinc-200 text-zinc-500 cursor-not-allowed'
+                  ? "bg-zinc-900 hover:bg-zinc-800 text-white"
+                  : "bg-zinc-200 text-zinc-500 cursor-not-allowed"
               }`}
             >
-              {isCreating ?
-                (cvFile ? 'CV Analysis...' : 'LinkedIn Analysis...')
-                : 'Unmask'}
+              {isCreating
+                ? cvFile
+                  ? "CV Analysis..."
+                  : "LinkedIn Analysis..."
+                : "HireSense"}
             </Button>
           </div>
         </div>

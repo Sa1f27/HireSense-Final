@@ -1,64 +1,77 @@
-'use client';
+"use client";
 
-import { Trash2, LayoutDashboard, Users, Settings, CreditCard, Cog, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { useApplicants } from '@/lib/contexts/ApplicantContext';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import {
+  Trash2,
+  LayoutDashboard,
+  Users,
+  Settings,
+  CreditCard,
+  Cog,
+  ChevronRight,
+} from "lucide-react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { useApplicants } from "@/lib/contexts/ApplicantContext";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface ConsoleSidebarProps {
   selectedId: string;
   onSelectApplicant: (id: string) => void;
   onSelectNew: () => void;
-  onDeleteApplicant: (id: string, name: string, event: React.MouseEvent) => void;
+  onDeleteApplicant: (
+    id: string,
+    name: string,
+    event: React.MouseEvent
+  ) => void;
 }
 
 export default function ConsoleSidebar({
   selectedId,
   onSelectApplicant,
   onSelectNew,
-  onDeleteApplicant
+  onDeleteApplicant,
 }: ConsoleSidebarProps) {
   const { applicants } = useApplicants();
   const pathname = usePathname();
 
   const navigationItems = [
     {
-      name: 'Dashboard',
-      href: '/board',
+      name: "Dashboard",
+      href: "/board",
       icon: LayoutDashboard,
-      active: pathname === '/board',
-      comingSoon: false
+      active: pathname === "/board",
+      comingSoon: false,
     },
     {
-      name: 'Applicants',
-      href: '/board/applicants', 
+      name: "Applicants",
+      href: "/board/applicants",
       icon: Users,
-      active: pathname.startsWith('/board/applicants') || pathname.includes('?id='),
-      comingSoon: false
+      active:
+        pathname.startsWith("/board/applicants") || pathname.includes("?id="),
+      comingSoon: false,
     },
     {
-      name: 'Settings',
-      href: '/board/settings',
+      name: "Settings",
+      href: "/board/settings",
       icon: Settings,
-      active: pathname.startsWith('/board/settings'),
-      comingSoon: true
+      active: pathname.startsWith("/board/settings"),
+      comingSoon: true,
     },
     {
-      name: 'Billing',
-      href: '/board/billing',
+      name: "Billing",
+      href: "/board/billing",
       icon: CreditCard,
-      active: pathname.startsWith('/board/billing'),
-      comingSoon: true
+      active: pathname.startsWith("/board/billing"),
+      comingSoon: true,
     },
     {
-      name: 'System',
-      href: '/board/system',
+      name: "System",
+      href: "/board/system",
       icon: Cog,
-      active: pathname.startsWith('/board/system'),
-      comingSoon: true
-    }
+      active: pathname.startsWith("/board/system"),
+      comingSoon: true,
+    },
   ];
 
   return (
@@ -66,34 +79,35 @@ export default function ConsoleSidebar({
       {/* Logo Header */}
       <div className="p-6 border-b border-zinc-200/50">
         <Link href="/" className="flex items-center">
-          <Image 
-            src="/Logo-full.svg" 
-            alt="Unmask" 
+          <Image
+            src="/logo-2.png"
+            alt="HireSense"
             width={150}
             height={32}
             className="h-8 w-auto"
           />
         </Link>
       </div>
-      
+
       {/* Main Navigation */}
       <div className="p-4">
         <nav className="space-y-2">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.active;
-            
+
             return (
               <div key={item.name} className="relative">
                 <Link
-                  href={item.comingSoon ? '#' : item.href}
+                  href={item.comingSoon ? "#" : item.href}
                   className={`
                     flex items-center px-4 py-3 rounded-xl font-medium transition-all duration-200 group
-                    ${isActive && !item.comingSoon
-                      ? 'bg-zinc-100 text-zinc-900 border border-zinc-200 shadow-sm'
-                      : item.comingSoon
-                        ? 'bg-white/30 text-zinc-400 border border-transparent cursor-not-allowed'
-                        : 'bg-white/50 hover:bg-white/70 text-zinc-800 border border-transparent hover:border-zinc-200/50 hover:shadow-sm'
+                    ${
+                      isActive && !item.comingSoon
+                        ? "bg-zinc-100 text-zinc-900 border border-zinc-200 shadow-sm"
+                        : item.comingSoon
+                        ? "bg-white/30 text-zinc-400 border border-transparent cursor-not-allowed"
+                        : "bg-white/50 hover:bg-white/70 text-zinc-800 border border-transparent hover:border-zinc-200/50 hover:shadow-sm"
                     }
                   `}
                   onClick={(e) => item.comingSoon && e.preventDefault()}
@@ -116,38 +130,43 @@ export default function ConsoleSidebar({
       </div>
 
       {/* Applicants Section - Only show when on applicants route */}
-      {(pathname.startsWith('/board/applicants') || pathname.includes('?id=')) && (
+      {(pathname.startsWith("/board/applicants") ||
+        pathname.includes("?id=")) && (
         <div className="flex-1 px-4">
           <div className="border-t border-zinc-200/50 pt-4">
-            <h3 className="text-sm font-semibold mb-3 text-zinc-700 px-4">Recent Applicants</h3>
+            <h3 className="text-sm font-semibold mb-3 text-zinc-700 px-4">
+              Recent Applicants
+            </h3>
             <div className="space-y-1 max-h-64 overflow-y-auto">
-              {applicants.slice(0, 5).map(applicant => (
+              {applicants.slice(0, 5).map((applicant) => (
                 <div key={applicant.id} className="group relative">
                   <button
                     className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                       selectedId === applicant.id
-                        ? 'bg-zinc-100 text-zinc-900'
-                        : 'text-zinc-600 hover:bg-white/70 hover:text-zinc-800'
+                        ? "bg-zinc-100 text-zinc-900"
+                        : "text-zinc-600 hover:bg-white/70 hover:text-zinc-800"
                     }`}
                     onClick={() => onSelectApplicant(applicant.id)}
                   >
                     <div className="flex items-center justify-between">
                       <span className="flex-1 truncate">{applicant.name}</span>
                       <div className="flex items-center gap-1">
-                        {applicant.status === 'processing' && (
+                        {applicant.status === "processing" && (
                           <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                         )}
-                        {applicant.status === 'completed' && (
+                        {applicant.status === "completed" && (
                           <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                         )}
-                        {applicant.status === 'failed' && (
+                        {applicant.status === "failed" && (
                           <div className="w-2 h-2 bg-red-400 rounded-full"></div>
                         )}
                       </div>
                     </div>
                   </button>
                   <button
-                    onClick={(e) => onDeleteApplicant(applicant.id, applicant.name, e)}
+                    onClick={(e) =>
+                      onDeleteApplicant(applicant.id, applicant.name, e)
+                    }
                     className="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 p-1 hover:bg-red-100/70 rounded text-red-500 hover:text-red-600"
                     title={`Delete ${applicant.name}`}
                   >
@@ -156,7 +175,7 @@ export default function ConsoleSidebar({
                 </div>
               ))}
             </div>
-            
+
             {/* Add New Button */}
             <div className="mt-4 pt-3 border-t border-zinc-200/50">
               <Button

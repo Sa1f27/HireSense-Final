@@ -1,20 +1,34 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useState, useCallback, memo, useMemo, useEffect } from 'react';
-import { LayoutDashboard, Users, Plus, ChevronDown, Settings, Check, Search, LogOut, User, Shield, Database, CreditCard, Building2 } from 'lucide-react';
-import { useApplicants } from '@/lib/contexts/ApplicantContext';
-import { useAuth } from '@/lib/contexts/AuthContext';
-import { useSharedUserProfile } from '@/lib/contexts/UserProfileContext';
-import { Button } from '@/components/ui/button';
-import { useAshbyAccess } from '@/lib/ashby/config';
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useCallback, memo, useMemo, useEffect } from "react";
+import {
+  LayoutDashboard,
+  Users,
+  Plus,
+  ChevronDown,
+  Settings,
+  Check,
+  Search,
+  LogOut,
+  User,
+  Shield,
+  Database,
+  CreditCard,
+  Building2,
+} from "lucide-react";
+import { useApplicants } from "@/lib/contexts/ApplicantContext";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useSharedUserProfile } from "@/lib/contexts/UserProfileContext";
+import { Button } from "@/components/ui/button";
+import { useAshbyAccess } from "@/lib/ashby/config";
 
 const ANIMATION_DURATION = {
-    SIDEBAR: 500,
-    TEXT: 300,
-    COLOR_TRANSITION: 200,
+  SIDEBAR: 500,
+  TEXT: 300,
+  COLOR_TRANSITION: 200,
 } as const;
 
 interface NavigationItem {
@@ -32,8 +46,8 @@ interface BoardSidebarProps {
 const useAnimationStyles = (isCollapsed: boolean) => {
   const getTextContainerStyle = useCallback(
     (): React.CSSProperties => ({
-      width: isCollapsed ? '0px' : '150px',
-      overflow: 'hidden',
+      width: isCollapsed ? "0px" : "150px",
+      overflow: "hidden",
       transition: `width ${ANIMATION_DURATION.SIDEBAR}ms cubic-bezier(0.4, 0, 0.2, 1)`,
     }),
     [isCollapsed]
@@ -41,17 +55,17 @@ const useAnimationStyles = (isCollapsed: boolean) => {
 
   const getUniformTextStyle = useCallback(
     (): React.CSSProperties => ({
-      willChange: 'opacity',
+      willChange: "opacity",
       opacity: isCollapsed ? 0 : 1,
-      transition: `opacity 300ms ease ${isCollapsed ? '0ms' : '200ms'}`,
-      whiteSpace: 'nowrap' as const,
+      transition: `opacity 300ms ease ${isCollapsed ? "0ms" : "200ms"}`,
+      whiteSpace: "nowrap" as const,
     }),
     [isCollapsed]
   );
 
   const sidebarContainerStyle: React.CSSProperties = useMemo(
     () => ({
-      willChange: 'width',
+      willChange: "width",
       transition: `width ${ANIMATION_DURATION.SIDEBAR}ms cubic-bezier(0.4, 0, 0.2, 1)`,
     }),
     []
@@ -64,7 +78,10 @@ const useAnimationStyles = (isCollapsed: boolean) => {
   };
 };
 
-const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => {
+const BoardSidebarComponent = ({
+  isCollapsed,
+  onToggle,
+}: BoardSidebarProps) => {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -72,97 +89,108 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
   const { signOut } = useAuth();
   const { displayName, displayInitial } = useSharedUserProfile();
   const [applicantsDropdownOpen, setApplicantsDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
 
-  const selectedApplicantId = searchParams.get('id');
+  const selectedApplicantId = searchParams.get("id");
   const { hasAccess: showATSTab } = useAshbyAccess();
 
-  const {
-    getTextContainerStyle,
-    getUniformTextStyle,
-    sidebarContainerStyle,
-  } = useAnimationStyles(isCollapsed);
+  const { getTextContainerStyle, getUniformTextStyle, sidebarContainerStyle } =
+    useAnimationStyles(isCollapsed);
 
-  const navigation = useMemo<NavigationItem[]>(
-    () => {
-      const navItems: NavigationItem[] = [
-        {
-          name: 'Dashboard',
-          href: '/board/dashboard',
-          icon: LayoutDashboard,
-          ariaLabel: 'Dashboard overview',
-        },
-        {
-          name: 'Personalize',
-          href: '/board/personalize',
-          icon: Settings,
-          ariaLabel: 'Configure analysis settings',
-        },
-      ];
-      
-      // Add ATS tab if user is authorized
-      if (showATSTab) {
-        navItems.push({
-          name: 'ATS',
-          href: '/board/ats',
-          icon: Building2,
-          ariaLabel: 'Applicant Tracking System',
-        });
-      }
-      
-      return navItems;
-    },
-    [showATSTab]
-  );
+  const navigation = useMemo<NavigationItem[]>(() => {
+    const navItems: NavigationItem[] = [
+      {
+        name: "Dashboard",
+        href: "/board/dashboard",
+        icon: LayoutDashboard,
+        ariaLabel: "Dashboard overview",
+      },
+      {
+        name: "Personalize",
+        href: "/board/personalize",
+        icon: Settings,
+        ariaLabel: "Configure analysis settings",
+      },
+    ];
+
+    // Add ATS tab if user is authorized
+    if (showATSTab) {
+      navItems.push({
+        name: "ATS",
+        href: "/board/ats",
+        icon: Building2,
+        ariaLabel: "Applicant Tracking System",
+      });
+    }
+
+    return navItems;
+  }, [showATSTab]);
 
   const settingsNavigation = useMemo<NavigationItem[]>(
     () => [
       {
-        name: 'Personal Profile',
-        href: '/board/settings',
+        name: "Personal Profile",
+        href: "/board/settings",
         icon: User,
       },
       {
-        name: 'Security & access',
-        href: '/board/settings?tab=security',
+        name: "Security & access",
+        href: "/board/settings?tab=security",
         icon: Shield,
       },
       {
-        name: 'Data & privacy',
-        href: '/board/settings?tab=privacy',
+        name: "Data & privacy",
+        href: "/board/settings?tab=privacy",
         icon: Database,
       },
       {
-        name: 'Billing',
-        href: '/board/settings?tab=billing',
+        name: "Billing",
+        href: "/board/settings?tab=billing",
         icon: CreditCard,
       },
     ],
     []
   );
 
-  const navigateToApplicant = useCallback((id: string) => {
-    router.push(`/board?id=${id}`);
-  }, [router]);
+  const navigateToApplicant = useCallback(
+    (id: string) => {
+      router.push(`/board?id=${id}`);
+    },
+    [router]
+  );
 
   const navigateToNew = useCallback(() => {
-    router.push('/board');
+    router.push("/board");
   }, [router]);
 
   const filteredApplicants = useMemo(() => {
     if (!searchQuery.trim()) return applicants;
-    return applicants.filter(applicant =>
-      applicant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ((applicant.cv_data?.jobTitle && applicant.cv_data.jobTitle.toLowerCase().includes(searchQuery.toLowerCase())) ||
-       (applicant.li_data?.headline && applicant.li_data.headline.toLowerCase().includes(searchQuery.toLowerCase()))) ||
-      (applicant.email && applicant.email.toLowerCase().includes(searchQuery.toLowerCase()))
+    return applicants.filter(
+      (applicant) =>
+        applicant.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (applicant.cv_data?.jobTitle &&
+          applicant.cv_data.jobTitle
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (applicant.li_data?.headline &&
+          applicant.li_data.headline
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())) ||
+        (applicant.email &&
+          applicant.email.toLowerCase().includes(searchQuery.toLowerCase()))
     );
   }, [applicants, searchQuery]);
 
   // Auto-expand applicants dropdown when on board pages with applicants
   useEffect(() => {
-    if (pathname.startsWith('/board') && pathname !== '/board/dashboard' && pathname !== '/board/personalize' && pathname !== '/board/ats' && applicants.length > 0) {
+    if (
+      pathname.startsWith("/board") &&
+      pathname !== "/board/dashboard" &&
+      pathname !== "/board/personalize" &&
+      pathname !== "/board/ats" &&
+      applicants.length > 0
+    ) {
       setApplicantsDropdownOpen(true);
     }
   }, [pathname, applicants.length]);
@@ -171,12 +199,15 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
     onToggle(!isCollapsed);
   }, [isCollapsed, onToggle]);
 
-  const handleKeyDown = useCallback((event: React.KeyboardEvent, action?: () => void) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      action?.();
-    }
-  }, []);
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent, action?: () => void) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        action?.();
+      }
+    },
+    []
+  );
 
   const renderNavigationItem = useCallback(
     (item: NavigationItem) => {
@@ -189,8 +220,8 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
 
       const getStateClasses = (isActive: boolean) =>
         isActive
-          ? 'bg-[#f2f2f2] text-[#282828]'
-          : 'text-[#282828] hover:text-[#282828] hover:bg-[#f7f7f7]';
+          ? "bg-[#f2f2f2] text-[#282828]"
+          : "text-[#282828] hover:text-[#282828] hover:bg-[#f7f7f7]";
 
       return (
         <li key={item.name}>
@@ -199,13 +230,16 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
             className={`${baseClasses} ${getStateClasses(isActive)}`}
             title={isCollapsed ? item.name : undefined}
             aria-label={item.ariaLabel || item.name}
-            style={{ willChange: 'background-color, color' }}
+            style={{ willChange: "background-color, color" }}
           >
             <div className="shrink-0 flex items-center justify-center w-5 h-5">
               <item.icon className="h-[18px] w-[18px]" aria-hidden="true" />
             </div>
 
-            <div className="ml-[12px] overflow-hidden" style={getTextContainerStyle()}>
+            <div
+              className="ml-[12px] overflow-hidden"
+              style={getTextContainerStyle()}
+            >
               <span className="block text-left" style={getUniformTextStyle()}>
                 {item.name}
               </span>
@@ -220,7 +254,7 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
   return (
     <aside
       className={`flex h-full flex-col bg-white border-r py-3 px-2 border-[#e5e5e5] relative ${
-        isCollapsed ? 'w-[64px]' : 'w-[220px]'
+        isCollapsed ? "w-[64px]" : "w-[220px]"
       }`}
       style={sidebarContainerStyle}
       role="navigation"
@@ -230,15 +264,15 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
         {isCollapsed ? (
           <div className="flex items-center">
             <Image
-              src="/unmask-logo.svg"
-              alt="Unmask"
+              src="/logo.png"
+              alt="HireSense"
               width={24}
               height={24}
               className="mx-3 h-6 w-6"
             />
             <button
               onClick={toggleSidebar}
-              onKeyDown={e => handleKeyDown(e, toggleSidebar)}
+              onKeyDown={(e) => handleKeyDown(e, toggleSidebar)}
               className="absolute inset-0 flex items-center justify-center text-gray-500 hover:text-gray-800  opacity-0 scale-90 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out focus:outline-none"
               aria-label="Open sidebar"
             >
@@ -249,16 +283,16 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
           <>
             <div className="flex items-center">
               <Image
-                src="/unmask-logo.svg"
-                alt="Unmask"
+                src="/logo.png"
+                alt="HireSense"
                 width={24}
                 height={24}
-                className="mx-3 h-6 w-6"
+                className="mx-10 h-10 w-6"
               />
             </div>
             <button
               onClick={toggleSidebar}
-              onKeyDown={e => handleKeyDown(e, toggleSidebar)}
+              onKeyDown={(e) => handleKeyDown(e, toggleSidebar)}
               className="text-gray-500 hover:text-gray-800 p-1 rounded-[4px] hover:bg-[#f7f7f7] h-6 w-6 transition-colors focus:outline-none"
               aria-label="Close sidebar"
             >
@@ -268,8 +302,11 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
         )}
       </header>
 
-
-      <nav className="flex flex-1 flex-col" role="navigation" aria-label="Main menu">
+      <nav
+        className="flex flex-1 flex-col"
+        role="navigation"
+        aria-label="Main menu"
+      >
         <ul role="list" className="flex flex-1 flex-col">
           <li>
             <ul role="list" className="space-y-1">
@@ -280,15 +317,19 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
           {/* Search Bar */}
           {!isCollapsed && (
             <li className="mt-6">
-              <div className={`relative transition-all duration-200 ${
-                searchFocused
-                  ? 'bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200  p-1'
-                  : 'bg-gray-50 border border-gray-200 '
-              }`}>
+              <div
+                className={`relative transition-all duration-200 ${
+                  searchFocused
+                    ? "bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200  p-1"
+                    : "bg-gray-50 border border-gray-200 "
+                }`}
+              >
                 <div className="relative">
-                  <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
-                    searchFocused ? 'text-pink-500' : 'text-gray-400'
-                  } transition-colors duration-200`} />
+                  <Search
+                    className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 ${
+                      searchFocused ? "text-pink-500" : "text-gray-400"
+                    } transition-colors duration-200`}
+                  />
                   <input
                     type="text"
                     placeholder="Search applicants..."
@@ -298,17 +339,16 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
                     onBlur={() => setSearchFocused(false)}
                     className={`w-full pl-10 pr-8 py-2.5 text-sm  border-0 focus:ring-0 focus:outline-none transition-all duration-200 ${
                       searchFocused
-                        ? 'bg-white shadow-sm text-gray-900 placeholder-gray-500'
-                        : 'bg-transparent text-gray-700 placeholder-gray-400'
+                        ? "bg-white shadow-sm text-gray-900 placeholder-gray-500"
+                        : "bg-transparent text-gray-700 placeholder-gray-400"
                     }`}
                   />
                   {searchQuery && (
                     <button
-                      onClick={() => setSearchQuery('')}
+                      onClick={() => setSearchQuery("")}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                     >
-                      <span className="sr-only">Clear search</span>
-                      ×
+                      <span className="sr-only">Clear search</span>×
                     </button>
                   )}
                 </div>
@@ -321,25 +361,46 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
             <div className="space-y-1">
               {/* Applicants Dropdown Header */}
               <button
-                onClick={() => setApplicantsDropdownOpen(!applicantsDropdownOpen)}
+                onClick={() =>
+                  setApplicantsDropdownOpen(!applicantsDropdownOpen)
+                }
                 className={`
                   group flex items-center rounded-[8px] text-[14px] px-[12px] py-[10px] w-full
                   text-[#282828] hover:text-[#282828] hover:bg-[#f7f7f7]
                   focus:outline-none transition-colors duration-200 ease-out
-                  ${pathname.startsWith('/board') && pathname !== '/board/dashboard' && pathname !== '/board/personalize' && pathname !== '/board/ats' ? 'bg-[#f2f2f2]' : ''}
+                  ${
+                    pathname.startsWith("/board") &&
+                    pathname !== "/board/dashboard" &&
+                    pathname !== "/board/personalize" &&
+                    pathname !== "/board/ats"
+                      ? "bg-[#f2f2f2]"
+                      : ""
+                  }
                 `}
               >
                 <div className="shrink-0 flex items-center justify-center w-5 h-5">
                   <Users className="h-[18px] w-[18px]" />
                 </div>
-                <div className="ml-[12px] overflow-hidden flex-1" style={getTextContainerStyle()}>
-                  <span className="block text-left" style={getUniformTextStyle()}>
-                    Applicants ({searchQuery ? filteredApplicants.length : applicants.length}{searchQuery ? `/${applicants.length}` : ''})
+                <div
+                  className="ml-[12px] overflow-hidden flex-1"
+                  style={getTextContainerStyle()}
+                >
+                  <span
+                    className="block text-left"
+                    style={getUniformTextStyle()}
+                  >
+                    Applicants (
+                    {searchQuery
+                      ? filteredApplicants.length
+                      : applicants.length}
+                    {searchQuery ? `/${applicants.length}` : ""})
                   </span>
                 </div>
                 <div className="shrink-0" style={getTextContainerStyle()}>
                   <ChevronDown
-                    className={`h-4 w-4 transition-transform duration-200 ${applicantsDropdownOpen ? 'rotate-180' : ''}`}
+                    className={`h-4 w-4 transition-transform duration-200 ${
+                      applicantsDropdownOpen ? "rotate-180" : ""
+                    }`}
                     style={getUniformTextStyle()}
                   />
                 </div>
@@ -354,7 +415,7 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
                     className={`
                       group flex items-center rounded-[8px] text-[13px] px-[12px] py-[8px] w-full
                       text-[#282828] hover:bg-[#f7f7f7] transition-colors duration-200
-                      ${!selectedApplicantId ? 'bg-[#f2f2f2]' : ''}
+                      ${!selectedApplicantId ? "bg-[#f2f2f2]" : ""}
                     `}
                   >
                     <Plus className="h-4 w-4 mr-2" />
@@ -362,14 +423,18 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
                   </button>
 
                   {/* Applicant List */}
-                  {filteredApplicants.map(applicant => (
+                  {filteredApplicants.map((applicant) => (
                     <button
                       key={applicant.id}
                       onClick={() => navigateToApplicant(applicant.id)}
                       className={`
                         group flex items-center rounded-[8px] text-[13px] px-[12px] py-[8px] w-full
                         text-[#282828] hover:bg-[#f7f7f7] transition-colors duration-200
-                        ${selectedApplicantId === applicant.id ? 'bg-[#f2f2f2]' : ''}
+                        ${
+                          selectedApplicantId === applicant.id
+                            ? "bg-[#f2f2f2]"
+                            : ""
+                        }
                       `}
                     >
                       <div className="w-6 h-6 bg-zinc-100  flex items-center justify-center mr-2">
@@ -377,17 +442,21 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
                           {applicant.name.charAt(0).toUpperCase()}
                         </span>
                       </div>
-                      <span className="flex-1 text-left truncate">{applicant.name}</span>
+                      <span className="flex-1 text-left truncate">
+                        {applicant.name}
+                      </span>
                       <div className="ml-2">
-                        {applicant.status === 'completed' && (
+                        {applicant.status === "completed" && (
                           <div className="w-4 h-4 bg-green-100  flex items-center justify-center">
                             <Check className="w-2.5 h-2.5 text-green-600" />
                           </div>
                         )}
-                        {(applicant.status === 'processing' || applicant.status === 'analyzing' || applicant.status === 'uploading') && (
+                        {(applicant.status === "processing" ||
+                          applicant.status === "analyzing" ||
+                          applicant.status === "uploading") && (
                           <div className="w-2 h-2 bg-yellow-400  animate-pulse"></div>
                         )}
-                        {applicant.status === 'failed' && (
+                        {applicant.status === "failed" && (
                           <div className="w-2 h-2 bg-red-400 "></div>
                         )}
                       </div>
@@ -400,11 +469,13 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
                     </div>
                   )}
 
-                  {applicants.length > 0 && filteredApplicants.length === 0 && searchQuery && (
-                    <div className="px-[12px] py-[8px] text-xs text-gray-500">
-                      No applicants match &quot;{searchQuery}&quot;
-                    </div>
-                  )}
+                  {applicants.length > 0 &&
+                    filteredApplicants.length === 0 &&
+                    searchQuery && (
+                      <div className="px-[12px] py-[8px] text-xs text-gray-500">
+                        No applicants match &quot;{searchQuery}&quot;
+                      </div>
+                    )}
                 </div>
               )}
             </div>
@@ -419,11 +490,16 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
               {settingsNavigation.map((item) => {
                 // Check if this settings item is active
                 const isItemActive = (() => {
-                  if (item.href === '/board/settings') {
-                    return pathname === '/board/settings' && !searchParams.get('tab');
+                  if (item.href === "/board/settings") {
+                    return (
+                      pathname === "/board/settings" && !searchParams.get("tab")
+                    );
                   }
-                  const tabName = item.href.split('tab=')[1];
-                  return pathname === '/board/settings' && searchParams.get('tab') === tabName;
+                  const tabName = item.href.split("tab=")[1];
+                  return (
+                    pathname === "/board/settings" &&
+                    searchParams.get("tab") === tabName
+                  );
                 })();
                 return (
                   <li key={item.name}>
@@ -431,9 +507,10 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
                       href={item.href}
                       className={`
                         group flex items-center rounded-[8px] text-[14px] px-[12px] py-[10px]
-                        ${isItemActive
-                          ? 'bg-[#f2f2f2] text-[#282828]'
-                          : 'text-[#282828] hover:text-[#282828] hover:bg-[#f7f7f7]'
+                        ${
+                          isItemActive
+                            ? "bg-[#f2f2f2] text-[#282828]"
+                            : "text-[#282828] hover:text-[#282828] hover:bg-[#f7f7f7]"
                         }
                         focus:outline-none transition-colors duration-200 ease-out
                       `}
@@ -441,8 +518,14 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
                       <div className="shrink-0 flex items-center justify-center w-5 h-5">
                         <item.icon className="h-[18px] w-[18px]" />
                       </div>
-                      <div className="ml-[12px] overflow-hidden flex-1" style={getTextContainerStyle()}>
-                        <span className="block text-left" style={getUniformTextStyle()}>
+                      <div
+                        className="ml-[12px] overflow-hidden flex-1"
+                        style={getTextContainerStyle()}
+                      >
+                        <span
+                          className="block text-left"
+                          style={getUniformTextStyle()}
+                        >
                           {item.name}
                         </span>
                       </div>
@@ -464,8 +547,14 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
                   {displayInitial}
                 </span>
               </div>
-              <div className="ml-3 overflow-hidden" style={getTextContainerStyle()}>
-                <span className="block text-sm text-[#282828] truncate" style={getUniformTextStyle()}>
+              <div
+                className="ml-3 overflow-hidden"
+                style={getTextContainerStyle()}
+              >
+                <span
+                  className="block text-sm text-[#282828] truncate"
+                  style={getUniformTextStyle()}
+                >
                   {displayName}
                 </span>
               </div>
@@ -490,6 +579,6 @@ const BoardSidebarComponent = ({ isCollapsed, onToggle }: BoardSidebarProps) => 
 };
 
 const BoardSidebar = memo(BoardSidebarComponent);
-BoardSidebar.displayName = 'BoardSidebar';
+BoardSidebar.displayName = "BoardSidebar";
 
 export default BoardSidebar;
