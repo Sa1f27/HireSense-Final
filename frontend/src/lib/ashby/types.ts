@@ -1,4 +1,4 @@
-// Ashby API Types for Unmask Integration
+// Ashby API Types for HireSense Integration
 
 // Authentication
 export interface AshbyAuth {
@@ -157,15 +157,15 @@ export interface AshbyApplicationUpdateRequest {
 }
 
 
-// Integration-specific types for Unmask
-export interface UnmaskAshbyIntegration {
+// Integration-specific types for HireSense
+export interface HireSenseAshbyIntegration {
   enabled: boolean;
   apiKey: string;
   customFieldMappings: {
-    unmaskScore: string; // Ashby custom field name for credibility score
-    unmaskFlags: string; // Ashby custom field name for verification flags
-    unmaskReportUrl: string; // Ashby custom field name for report URL
-    unmaskVerificationStatus: string; // Ashby custom field name for status
+    HireSenseScore: string; // Ashby custom field name for credibility score
+    HireSenseFlags: string; // Ashby custom field name for verification flags
+    HireSenseReportUrl: string; // Ashby custom field name for report URL
+    HireSenseVerificationStatus: string; // Ashby custom field name for status
   };
   tagMappings: {
     verified: string; // Tag for verified candidates

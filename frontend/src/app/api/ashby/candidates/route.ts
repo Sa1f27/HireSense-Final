@@ -307,7 +307,7 @@ async function getCandidatesHandler(_context: ApiHandlerContext) {
       .from('applicants')
       .select(`
         *,
-        ashby_candidates!ashby_candidates_unmask_applicant_id_fkey(
+        ashby_candidates!ashby_candidates_HireSense_applicant_id_fkey(
           ashby_id,
           name,
           email,
@@ -391,8 +391,8 @@ async function getCandidatesHandler(_context: ApiHandlerContext) {
         created_at: applicant.created_at,
         updated_at: applicant.updated_at,
         last_synced_at: applicant.updated_at,
-        unmask_applicant_id: applicant.id,
-        unmask_status: applicant.status,
+        HireSense_applicant_id: applicant.id,
+        HireSense_status: applicant.status,
         // Add analysis data from applicant
         analysis: applicant.ai_data,
         cv_file_id: applicant.cv_file_id,

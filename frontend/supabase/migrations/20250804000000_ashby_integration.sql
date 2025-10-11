@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS public.ashby_candidates (
   location_details jsonb, -- full location object if needed
   timezone text,
   profile_url text, -- Ashby profile URL
-  unmask_applicant_id uuid REFERENCES public.applicants(id) ON DELETE SET NULL,
+  HireSense_applicant_id uuid REFERENCES public.applicants(id) ON DELETE SET NULL,
   cv_file_id uuid REFERENCES public.files(id) ON DELETE SET NULL, -- Shared reference to same file as applicants
   
   -- Storage metadata
@@ -98,7 +98,7 @@ CREATE INDEX IF NOT EXISTS idx_ashby_candidates_email ON public.ashby_candidates
 CREATE INDEX IF NOT EXISTS idx_ashby_candidates_application_ids ON public.ashby_candidates USING gin (application_ids);
 CREATE INDEX IF NOT EXISTS idx_ashby_candidates_emails ON public.ashby_candidates USING gin (emails);
 CREATE INDEX IF NOT EXISTS idx_ashby_candidates_phone_numbers ON public.ashby_candidates USING gin (phone_numbers);
-CREATE INDEX IF NOT EXISTS idx_ashby_candidates_unmask_applicant_id ON public.ashby_candidates(unmask_applicant_id);
+CREATE INDEX IF NOT EXISTS idx_ashby_candidates_HireSense_applicant_id ON public.ashby_candidates(HireSense_applicant_id);
 CREATE INDEX IF NOT EXISTS idx_ashby_candidates_source_title ON public.ashby_candidates(source_title);
 CREATE INDEX IF NOT EXISTS idx_ashby_candidates_credited_to_name ON public.ashby_candidates(credited_to_name);
 CREATE INDEX IF NOT EXISTS idx_ashby_candidates_cv_file_id ON public.ashby_candidates(cv_file_id);
@@ -134,7 +134,7 @@ DECLARE
   applicant_id uuid;
 BEGIN
   -- Check if this ashby candidate is already linked to an applicant
-  IF NEW.unmask_applicant_id IS NOT NULL THEN
+  IF NEW.HireSense_applicant_id IS NOT NULL THEN
     -- Update existing linked applicant (keep same cv_file_id if it exists)
     UPDATE public.applicants
     SET
@@ -146,7 +146,7 @@ BEGIN
       source = 'ashby',
       cv_file_id = COALESCE(NEW.cv_file_id, cv_file_id), -- Use shared file if available
       updated_at = now()
-    WHERE id = NEW.unmask_applicant_id;
+    WHERE id = NEW.HireSense_applicant_id;
   ELSE
     -- Insert new applicant with shared file reference
     INSERT INTO public.applicants (
@@ -187,7 +187,7 @@ BEGIN
     
     -- Update the ashby_candidates record with the new applicant ID
     UPDATE public.ashby_candidates
-    SET unmask_applicant_id = applicant_id
+    SET HireSense_applicant_id = applicant_id
     WHERE id = NEW.id;
     
     -- If there's a resume file handle but no cv_file_id yet, trigger download
@@ -276,7 +276,7 @@ BEGIN
   -- Update the Ashby candidate with applicant link
   UPDATE public.ashby_candidates
   SET 
-    unmask_applicant_id = p_applicant_id,
+    HireSense_applicant_id = p_applicant_id,
     updated_at = now()
   WHERE ashby_id = p_ashby_candidate_id AND user_id = p_user_id;
   
@@ -290,7 +290,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 COMMENT ON TABLE public.ashby_candidates IS 'Storage of candidates from Ashby ATS integration';
 COMMENT ON COLUMN public.applicants.source IS 'Source system where the applicant was created (manual, ashby, etc)';
-COMMENT ON COLUMN public.ashby_candidates.unmask_applicant_id IS 'Links to applicants table for synchronized records';
+COMMENT ON COLUMN public.ashby_candidates.HireSense_applicant_id IS 'Links to applicants table for synchronized records';
 COMMENT ON COLUMN public.ashby_candidates.cv_file_id IS 'Shared reference to the same file record as applicants table';
 COMMENT ON COLUMN public.ashby_candidates.github_url IS 'GitHub profile URL for the candidate';
 COMMENT ON FUNCTION public.sync_ashby_candidate_to_applicant() IS 'Syncs Ashby candidates to applicants table with shared file references';

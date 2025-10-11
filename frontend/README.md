@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/unmask-logo.svg" alt="le-commit" width="200" />
+  <img src="public/logo-2.png" alt="le-commit" width="200" />
 </p>
 
 <h1 align="center">le-commit</h1>
@@ -14,6 +14,7 @@
 npm install
 npm run dev
 ```
+
 or bun if you're in a rush
 
 ```bash

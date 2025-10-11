@@ -1,38 +1,42 @@
 <div align="center">
-  <img src="frontend/public/le-commit-unmask.svg" alt="Le Commit" width="400" />
+  <img src="frontend/public/le-commit-HireSense.svg" alt="Le Commit" width="400" />
 </div>
 
-# Unmask - AI-Powered Hiring Verification Platform
+# HireSense - AI-Powered Hiring Verification Platform
 
 **Trust your hiring process again.**
 
-Unmask is an intelligent hiring verification platform that helps you verify candidate authenticity through comprehensive analysis of CVs, LinkedIn profiles, GitHub accounts, and automated reference calls. Built for **RAISE YOUR HACK 2025** • Vultr Track.
+HireSense is an intelligent hiring verification platform that helps you verify candidate authenticity through comprehensive analysis of CVs, LinkedIn profiles, GitHub accounts, and automated reference calls. Built for **RAISE YOUR HACK 2025** • Vultr Track.
 
-🌐 **Live Demo**: [unmask.click](http://unmask.click/)
+🌐 **Live Demo**: [HireSense.click](http://HireSense.click/)
 
 ---
 
 ## ✨ Features
 
 ### 🔍 **Multi-Source Profile Analysis**
+
 - **CV Processing**: Extracts and analyzes professional experience, education, skills, and credentials
 - **LinkedIn Integration**: Cross-references LinkedIn data with CV information for consistency
 - **GitHub Analysis**: Evaluates coding activity, repository quality, and technical skills
 - **Credibility Scoring**: AI-powered authenticity assessment with detailed flags and recommendations
 
 ### 📞 **Automated Reference Calling**
+
 - **AI-Powered Calls**: Automatically calls references using ElevenLabs Conversational AI
 - **Natural Conversations**: Professional, human-like interactions with references
 - **Transcript Analysis**: Real-time transcription and AI-powered summarization
 - **Reference Validation**: Cross-checks reference feedback with candidate claims
 
 ### 🎯 **Real-Time Interview Support**
+
 - **Live Feedback**: Get real-time prompts during candidate interviews
 - **Inconsistency Detection**: Flags discrepancies between sources on-the-fly
 - **Suggested Questions**: AI-generated follow-up questions based on analysis
 - **Interview Transcripts**: Live transcription with highlighted concerns
 
 ### 📊 **Comprehensive Dashboard**
+
 - **Candidate Profiles**: Unified view of all candidate information
 - **Processing Pipeline**: Real-time status tracking from upload to analysis
 - **Flag Management**: Visual indicators for potential concerns
@@ -43,6 +47,7 @@ Unmask is an intelligent hiring verification platform that helps you verify cand
 ## 🛠️ Technology Stack
 
 ### **Frontend**
+
 - **Next.js 15** - React framework with App Router
 - **TypeScript** - Type-safe development
 - **Tailwind CSS** - Modern styling framework
@@ -50,17 +55,20 @@ Unmask is an intelligent hiring verification platform that helps you verify cand
 - **Framer Motion** - Smooth animations
 
 ### **Backend & Storage**
+
 - **Supabase** - PostgreSQL database with real-time capabilities
 - **Supabase Storage** - Secure file storage for CVs and documents
 - **Ashby ATS Integration** - Seamless candidate import and sync
 
 ### **AI & Analysis**
+
 - **Groq API** - Fast AI inference for document analysis
 - **OpenAI GPT-4** - Advanced reasoning and summarization
 - **ElevenLabs** - Natural voice AI for reference calls
 - **PDF Processing** - Automated document parsing and extraction
 
 ### **Infrastructure**
+
 - **Docker** - Containerized deployment
 - **Vultr** - Cloud hosting platform
 - **Real-time Processing** - Async job processing
@@ -70,6 +78,7 @@ Unmask is an intelligent hiring verification platform that helps you verify cand
 ## 🚀 Quick Start
 
 ### **Prerequisites**
+
 - Node.js 18+
 - Docker (for production deployment)
 - API keys for external services
@@ -77,23 +86,27 @@ Unmask is an intelligent hiring verification platform that helps you verify cand
 ### **Development Setup**
 
 1. **Clone the repository**
+
    ```bash
-   git clone https://github.com/le-commit/unmask.git
-   cd unmask
+   git clone https://github.com/le-commit/HireSense.git
+   cd HireSense
    ```
 
 2. **Install dependencies**
+
    ```bash
    cd frontend
    pnpm install
    ```
 
 3. **Configure environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
 
    Required environment variables:
+
    ```env
    # Supabase
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -118,14 +131,15 @@ Unmask is an intelligent hiring verification platform that helps you verify cand
    ASHBY_API_KEY=your_ashby_api_key
    ```
 
-
 4. **Start local supabase**
+
    ```bash
    supabase start
    supabase db reset --local
    ```
 
 5. **Start development server**
+
    ```bash
    pnpm dev
    ```
@@ -134,7 +148,6 @@ Unmask is an intelligent hiring verification platform that helps you verify cand
    ```
    http://localhost:3000
    ```
-
 
 ---
 
@@ -146,7 +159,7 @@ The application uses **pg_cron** for automated webhook queue processing in both 
 
 ✅ **Local Development**: pg_cron extension automatically installed  
 ✅ **Production**: pg_cron pre-available in Supabase Cloud  
-✅ **Queue Processing**: Automatic every 2 minutes in both environments  
+✅ **Queue Processing**: Automatic every 2 minutes in both environments
 
 ### **Zero Configuration Required**
 
@@ -156,6 +169,7 @@ pnpm dev
 ```
 
 **How it works:**
+
 1. Database migrations auto-install `pg_cron` extension
 2. Cron job created automatically: processes queue every 2 minutes
 3. Local development uses `host.docker.internal:3000`
@@ -167,7 +181,7 @@ pnpm dev
 
 ```sql
 -- Set production webhook base URL (optional)
-ALTER DATABASE your_production_db_name 
+ALTER DATABASE your_production_db_name
 SET app.webhook_base_url = 'https://your-domain.com';
 ```
 
@@ -177,13 +191,13 @@ Monitor queue status and cron job health:
 
 ```sql
 -- View pending webhooks
-SELECT webhook_type, status, priority, created_at, payload->'applicantId' as applicant_id 
-FROM webhook_queue 
-WHERE status IN ('pending', 'failed') 
+SELECT webhook_type, status, priority, created_at, payload->'applicantId' as applicant_id
+FROM webhook_queue
+WHERE status IN ('pending', 'failed')
 ORDER BY priority DESC, created_at ASC;
 
 -- Check pg_cron job status
-SELECT jobid, schedule, active, jobname FROM cron.job 
+SELECT jobid, schedule, active, jobname FROM cron.job
 WHERE jobname = 'process-webhook-queue';
 
 -- Use helper function for detailed status
@@ -200,7 +214,7 @@ curl -X POST "http://localhost:3000/api/webhooks/process-queue" \
   -H "Authorization: Bearer webhook-secret-dev" \
   -H "Content-Type: application/json"
 
-# Production  
+# Production
 curl -X POST "https://your-domain.com/api/webhooks/process-queue" \
   -H "Authorization: Bearer your-webhook-secret" \
   -H "Content-Type: application/json"
@@ -208,10 +222,10 @@ curl -X POST "https://your-domain.com/api/webhooks/process-queue" \
 
 ### **Queue Types & Priority**
 
-| Webhook Type | Priority | Purpose |
-|--------------|----------|---------|
+| Webhook Type | Priority                  | Purpose                                      |
+| ------------ | ------------------------- | -------------------------------------------- |
 | `score_push` | Based on AI score (1-100) | Push updated credibility scores to Ashby ATS |
-| `note_push` | 90 (high priority) | Push analysis notes and red flags to Ashby |
+| `note_push`  | 90 (high priority)        | Push analysis notes and red flags to Ashby   |
 
 **Priority Processing**: Higher scores processed first (score 85 = priority 85)
 
@@ -224,16 +238,19 @@ curl -X POST "https://your-domain.com/api/webhooks/process-queue" \
 We provide automated deployment scripts for seamless production deployment:
 
 1. **Make scripts executable**
+
    ```bash
    chmod +x deploy.sh rollback.sh check-status.sh
    ```
 
 2. **Deploy to production**
+
    ```bash
    ./deploy.sh
    ```
 
 3. **Check deployment status**
+
    ```bash
    ./check-status.sh
    ```
@@ -246,11 +263,13 @@ We provide automated deployment scripts for seamless production deployment:
 ### **Docker Deployment**
 
 1. **Build the Docker image**
+
    ```bash
-   docker build -t unmask:latest .
+   docker build -t HireSense:latest .
    ```
 
 2. **Configure webhook base URL for production**
+
    ```sql
    -- Required: Set webhook base URL to your production domain
    ALTER DATABASE your_production_db_name SET app.webhook_base_url = 'https://your-domain.com';
@@ -259,21 +278,23 @@ We provide automated deployment scripts for seamless production deployment:
 3. **Run the container**
    ```bash
    docker run -d \
-     --name unmask-app \
+     --name HireSense-app \
      -p 3000:3000 \
      --env-file .env.local \
-     unmask:latest
+     HireSense:latest
    ```
 
 ### **Manual Deployment**
 
 1. **Build the application**
+
    ```bash
    cd frontend
    npm run build
    ```
 
 2. **Configure webhook base URL for production**
+
    ```sql
    -- Required: Set webhook base URL to your production domain
    ALTER DATABASE your_production_db_name SET app.webhook_base_url = 'https://your-domain.com';
@@ -289,6 +310,7 @@ We provide automated deployment scripts for seamless production deployment:
 ## 🔌 API Endpoints
 
 ### **Applicant Management**
+
 - `GET /api/applicants` - List all applicants
 - `POST /api/applicants` - Create new applicant with CV/LinkedIn/GitHub
 - `GET /api/applicants/[id]` - Get specific applicant
@@ -296,20 +318,24 @@ We provide automated deployment scripts for seamless production deployment:
 - `DELETE /api/applicants/[id]` - Delete applicant
 
 ### **Ashby ATS Integration**
+
 - `GET /api/ashby/candidates` - List cached candidates from database with auto-sync
 - `POST /api/ashby/candidates` - Force refresh candidates from Ashby API
 - `POST /api/ashby/files` - Download and store CV in Supabase Storage (webhook endpoint)
 - `POST /api/ashby/push-score` - Send AI analysis score to Ashby custom field
 
 ### **File Management**
+
 - `GET /api/files/[fileId]` - Get signed URL for file download from storage
 
 ### **Reference Calling**
+
 - `POST /api/reference-call` - Initiate automated reference call
 - `GET /api/get-transcript?conversationId=` - Retrieve call transcript
 - `POST /api/summarize-transcript` - AI analysis of reference call
 
 ### **Processing Pipeline**
+
 - File upload → CV/LinkedIn parsing → GitHub analysis → AI credibility assessment → Reference verification
 
 ---
@@ -317,10 +343,12 @@ We provide automated deployment scripts for seamless production deployment:
 ## 📚 **Documentation**
 
 ### **Core Documentation**
+
 - **[Authentication Approach](docs/authentication-approach.md)** - Comprehensive auth architecture, middleware patterns, and security best practices
 - **[System Architecture](docs/architecture.md)** - Overall system design and data flow
 
 ### **Development Guides**
+
 - **[Setup Guides](docs/archive/)** - Historical setup and integration documentation
 
 ---
@@ -333,8 +361,8 @@ We provide automated deployment scripts for seamless production deployment:
 2. **Click "Add New Applicant"**
 3. **Upload required documents**:
    - CV (PDF, DOC, DOCX) - **Required**
-   - LinkedIn Profile (PDF, HTML, TXT) - *Optional*
-   - GitHub Profile URL - *Optional*
+   - LinkedIn Profile (PDF, HTML, TXT) - _Optional_
+   - GitHub Profile URL - _Optional_
 4. **Submit and wait for processing**
 
 ### **Automated Reference Calling**
@@ -361,17 +389,20 @@ We provide automated deployment scripts for seamless production deployment:
 ## 🔧 Configuration
 
 ### **AI Model Configuration**
+
 - **Primary Analysis**: Groq Llama models for speed
 - **Summarization**: GPT-4o-mini for cost efficiency
 - **Voice AI**: ElevenLabs for natural conversations
 
 ### **Processing Limits**
+
 - **GitHub Repositories**: 50 per analysis
 - **Content Analysis**: 3 repositories max
 - **File Size**: 10MB per document
 - **Concurrent Processing**: 3 applicants
 
 ### **Security Features**
+
 - Environment variable validation
 - File type restrictions
 - Input sanitization
@@ -384,21 +415,25 @@ We provide automated deployment scripts for seamless production deployment:
 ### **Common Issues**
 
 **"Permission denied" when running deployment scripts**
+
 ```bash
 chmod +x deploy.sh rollback.sh check-status.sh
 ```
 
 **CV processing fails**
+
 - Ensure PDF is not password protected
 - Check file size is under 10MB
 - Verify GROQ_API_KEY is set correctly
 
 **Reference calls not working**
+
 - Verify ElevenLabs agent is configured
 - Check Twilio phone number permissions
 - Ensure all environment variables are set
 
 **Webhook queue not processing**
+
 ```sql
 -- Check if pg_cron job exists
 SELECT * FROM cron.job WHERE jobname = 'process-webhook-queue';
@@ -414,15 +449,16 @@ SELECT net.http_post(
 ```
 
 **Docker deployment issues**
+
 ```bash
 # Check logs
-docker logs unmask-app
+docker logs HireSense-app
 
 # Restart container
-docker restart unmask-app
+docker restart HireSense-app
 
 # Check environment variables
-docker exec unmask-app env | sort
+docker exec HireSense-app env | sort
 ```
 
 ---
@@ -430,6 +466,7 @@ docker exec unmask-app env | sort
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [development guide](docs/) for:
+
 - Code style guidelines
 - Testing procedures
 - Feature request process
@@ -458,15 +495,14 @@ This project is built for **RAISE YOUR HACK 2025** hackathon submission.
 **Event**: RAISE YOUR HACK 2025
 **Track**: Vultr Infrastructure Challenge
 **Team**: le-commit
-**Live Demo**: [unmask.click](http://unmask.click/)
+**Live Demo**: [HireSense.click](http://HireSense.click/)
 
 ---
-
 
 <div align="center">
   <p>Built with ❤️ by the le-commit team</p>
   <p>
     <a href="https://github.com/le-commit" target="_blank">GitHub</a> •
-    <a href="http://unmask.click/" target="_blank">Live Demo</a>
+    <a href="http://HireSense.click/" target="_blank">Live Demo</a>
   </p>
 </div>

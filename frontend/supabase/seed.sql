@@ -1,10 +1,10 @@
 -- =============================================================================
--- Seed file for Le-Commit (Unmask) platform
+-- Seed file for Le-Commit (HireSense) platform
 -- =============================================================================
 -- Creates a test user that can be used for development and testing
 -- 
 -- Login credentials:
--- Email: test@unmask.click
+-- Email: test@HireSense.click
 -- Password: password123
 -- =============================================================================
 
@@ -32,7 +32,7 @@ INSERT INTO auth.users (
   '00000000-0000-0000-0000-000000000000',
   'authenticated',
   'authenticated',
-  'team@unmask.click',
+  'team@HireSense.click',
   crypt('lecommit42', gen_salt('bf')),
   NOW(),
   NOW(),
@@ -49,7 +49,7 @@ INSERT INTO auth.users (
 
 -- Insert corresponding user into public.users table (this will be created automatically by trigger, but adding for completeness)
 INSERT INTO public.users (id, email, full_name, ashby_api_key) VALUES
-  ('00000000-0000-0000-0000-000000000001', 'team@unmask.click', 'Test User', null)
+  ('00000000-0000-0000-0000-000000000001', 'team@HireSense.click', 'Test User', null)
 ON CONFLICT (id) DO UPDATE SET
   email = EXCLUDED.email,
   full_name = EXCLUDED.full_name;

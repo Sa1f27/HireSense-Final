@@ -1,25 +1,31 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useAuth } from '@/lib/contexts/AuthContext';
-import { useAshbyAccess } from '@/lib/ashby/config';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowLeft, 
-  ExternalLink, 
-  FileText, 
-  User, 
-  Mail, 
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/lib/contexts/AuthContext";
+import { useAshbyAccess } from "@/lib/ashby/config";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowLeft,
+  ExternalLink,
+  FileText,
+  User,
+  Mail,
   Calendar,
   Shield,
   AlertTriangle,
   CheckCircle,
   Clock,
-  RefreshCw
-} from 'lucide-react';
+  RefreshCw,
+} from "lucide-react";
 
 interface CandidateDetail {
   name: string;
@@ -30,9 +36,9 @@ interface CandidateDetail {
   created_at: string;
   tags: string[];
   custom_fields?: Record<string, unknown>;
-  unmask_applicant_id?: string;
-  unmask_status?: string;
-  fraud_likelihood?: 'low' | 'medium' | 'high';
+  HireSense_applicant_id?: string;
+  HireSense_status?: string;
+  fraud_likelihood?: "low" | "medium" | "high";
   fraud_reason?: string;
   analysis_summary?: string;
 }
@@ -43,7 +49,7 @@ export default function CandidateDetailPage() {
   const { user, loading: authLoading } = useAuth();
   const { hasAccess, loading: accessLoading } = useAshbyAccess();
   const candidateId = params.candidateId as string;
-  
+
   const [candidate, setCandidate] = useState<CandidateDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +57,7 @@ export default function CandidateDetailPage() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [user, authLoading, router]);
 
@@ -66,24 +72,27 @@ export default function CandidateDetailPage() {
         // For now, we'll simulate fetching candidate details
         // In a real implementation, you'd fetch from your API
         const mockCandidate: CandidateDetail = {
-          name: 'John Doe',
-          email: 'john.doe@example.com',
-          linkedin_url: 'https://linkedin.com/in/johndoe',
+          name: "John Doe",
+          email: "john.doe@example.com",
+          linkedin_url: "https://linkedin.com/in/johndoe",
           has_resume: true,
-          resume_url: 'https://example.com/resume.pdf',
+          resume_url: "https://example.com/resume.pdf",
           created_at: new Date().toISOString(),
-          tags: ['software-engineer', 'remote', 'senior'],
-          unmask_status: 'completed',
-          fraud_likelihood: 'low',
-          fraud_reason: '',
-          analysis_summary: 'Candidate profile appears authentic with consistent work history and verifiable LinkedIn profile.'
+          tags: ["software-engineer", "remote", "senior"],
+          HireSense_status: "completed",
+          fraud_likelihood: "low",
+          fraud_reason: "",
+          analysis_summary:
+            "Candidate profile appears authentic with consistent work history and verifiable LinkedIn profile.",
         };
 
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         setCandidate(mockCandidate);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch candidate');
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch candidate"
+        );
       } finally {
         setLoading(false);
       }
@@ -96,19 +105,27 @@ export default function CandidateDetailPage() {
 
   const getFraudRiskColor = (likelihood?: string) => {
     switch (likelihood) {
-      case 'high': return 'text-red-600 bg-red-50 border-red-200';
-      case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'low': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case "high":
+        return "text-red-600 bg-red-50 border-red-200";
+      case "medium":
+        return "text-yellow-600 bg-yellow-50 border-yellow-200";
+      case "low":
+        return "text-green-600 bg-green-50 border-green-200";
+      default:
+        return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
 
   const getFraudRiskIcon = (likelihood?: string) => {
     switch (likelihood) {
-      case 'high': return <AlertTriangle className="h-5 w-5" />;
-      case 'medium': return <Shield className="h-5 w-5" />;
-      case 'low': return <CheckCircle className="h-5 w-5" />;
-      default: return <Clock className="h-5 w-5" />;
+      case "high":
+        return <AlertTriangle className="h-5 w-5" />;
+      case "medium":
+        return <Shield className="h-5 w-5" />;
+      case "low":
+        return <CheckCircle className="h-5 w-5" />;
+      default:
+        return <Clock className="h-5 w-5" />;
     }
   };
 
@@ -143,17 +160,24 @@ export default function CandidateDetailPage() {
                 ATS Integration Required
               </h2>
               <p className="text-gray-600 mb-6">
-                To access the ATS dashboard, you need to enable the integration with your applicant tracking system.
+                To access the ATS dashboard, you need to enable the integration
+                with your applicant tracking system.
               </p>
               <Button
-                onClick={() => window.open('mailto:support@unmask.click?subject=Enable ATS Integration', '_blank')}
+                onClick={() =>
+                  window.open(
+                    "mailto:support@HireSense.click?subject=Enable ATS Integration",
+                    "_blank"
+                  )
+                }
                 className="w-full"
               >
                 <Mail className="h-4 w-4 mr-2" />
-                Email support@unmask.click
+                Email support@HireSense.click
               </Button>
               <p className="text-sm text-gray-500 mt-4">
-                Our team will help you set up the integration and configure your API access.
+                Our team will help you set up the integration and configure your
+                API access.
               </p>
             </CardContent>
           </Card>
@@ -198,8 +222,12 @@ export default function CandidateDetailPage() {
           <Card className="border-red-200 bg-red-50">
             <CardContent className="p-8 text-center">
               <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-red-500" />
-              <h3 className="text-lg font-medium text-red-900 mb-2">Candidate Not Found</h3>
-              <p className="text-red-700">{error || 'Could not load candidate details.'}</p>
+              <h3 className="text-lg font-medium text-red-900 mb-2">
+                Candidate Not Found
+              </h3>
+              <p className="text-red-700">
+                {error || "Could not load candidate details."}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -230,7 +258,9 @@ export default function CandidateDetailPage() {
                   </div>
                   <div>
                     <CardTitle className="text-2xl">{candidate.name}</CardTitle>
-                    <CardDescription>Applicant ID: {candidate.unmask_applicant_id}</CardDescription>
+                    <CardDescription>
+                      Applicant ID: {candidate.HireSense_applicant_id}
+                    </CardDescription>
                   </div>
                 </div>
               </CardHeader>
@@ -243,7 +273,8 @@ export default function CandidateDetailPage() {
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-gray-400" />
                     <span className="text-sm">
-                      Added {new Date(candidate.created_at).toLocaleDateString()}
+                      Added{" "}
+                      {new Date(candidate.created_at).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
@@ -253,7 +284,9 @@ export default function CandidateDetailPage() {
                     <h4 className="text-sm font-medium mb-2">Tags</h4>
                     <div className="flex flex-wrap gap-2">
                       {candidate.tags.map((tag, index) => (
-                        <Badge key={index} variant="outline">{tag}</Badge>
+                        <Badge key={index} variant="outline">
+                          {tag}
+                        </Badge>
                       ))}
                     </div>
                   </div>
@@ -265,7 +298,9 @@ export default function CandidateDetailPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Data Sources</CardTitle>
-                <CardDescription>Available candidate information</CardDescription>
+                <CardDescription>
+                  Available candidate information
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {candidate.linkedin_url && (
@@ -274,13 +309,17 @@ export default function CandidateDetailPage() {
                       <ExternalLink className="h-5 w-5 text-blue-500" />
                       <div>
                         <p className="font-medium">LinkedIn Profile</p>
-                        <p className="text-sm text-gray-600">Professional background and network</p>
+                        <p className="text-sm text-gray-600">
+                          Professional background and network
+                        </p>
                       </div>
                     </div>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
-                      onClick={() => window.open(candidate.linkedin_url, '_blank')}
+                      onClick={() =>
+                        window.open(candidate.linkedin_url, "_blank")
+                      }
                     >
                       View Profile
                     </Button>
@@ -293,13 +332,18 @@ export default function CandidateDetailPage() {
                       <FileText className="h-5 w-5 text-green-500" />
                       <div>
                         <p className="font-medium">Resume/CV</p>
-                        <p className="text-sm text-gray-600">Work experience and qualifications</p>
+                        <p className="text-sm text-gray-600">
+                          Work experience and qualifications
+                        </p>
                       </div>
                     </div>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
-                      onClick={() => candidate.resume_url && window.open(candidate.resume_url, '_blank')}
+                      onClick={() =>
+                        candidate.resume_url &&
+                        window.open(candidate.resume_url, "_blank")
+                      }
                       disabled={!candidate.resume_url}
                     >
                       Download
@@ -320,36 +364,52 @@ export default function CandidateDetailPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Fraud Risk Assessment */}
-            <Card className={`border-2 ${getFraudRiskColor(candidate.fraud_likelihood)}`}>
+            <Card
+              className={`border-2 ${getFraudRiskColor(
+                candidate.fraud_likelihood
+              )}`}
+            >
               <CardHeader>
                 <div className="flex items-center gap-2">
                   {getFraudRiskIcon(candidate.fraud_likelihood)}
-                  <CardTitle className="text-lg">Fraud Risk Assessment</CardTitle>
+                  <CardTitle className="text-lg">
+                    Fraud Risk Assessment
+                  </CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div>
                     <p className="text-sm font-medium mb-1">Risk Level</p>
-                    <Badge 
-                      variant={candidate.fraud_likelihood === 'high' ? 'destructive' : 'outline'}
+                    <Badge
+                      variant={
+                        candidate.fraud_likelihood === "high"
+                          ? "destructive"
+                          : "outline"
+                      }
                       className="capitalize"
                     >
-                      {candidate.fraud_likelihood || 'Not Assessed'}
+                      {candidate.fraud_likelihood || "Not Assessed"}
                     </Badge>
                   </div>
-                  
+
                   {candidate.fraud_reason && (
                     <div>
                       <p className="text-sm font-medium mb-1">Reason</p>
-                      <p className="text-sm text-gray-700">{candidate.fraud_reason}</p>
+                      <p className="text-sm text-gray-700">
+                        {candidate.fraud_reason}
+                      </p>
                     </div>
                   )}
-                  
+
                   {candidate.analysis_summary && (
                     <div>
-                      <p className="text-sm font-medium mb-1">Analysis Summary</p>
-                      <p className="text-sm text-gray-700">{candidate.analysis_summary}</p>
+                      <p className="text-sm font-medium mb-1">
+                        Analysis Summary
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        {candidate.analysis_summary}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -362,10 +422,15 @@ export default function CandidateDetailPage() {
                 <CardTitle>Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {candidate.unmask_applicant_id ? (
-                  <Button 
+                {candidate.HireSense_applicant_id ? (
+                  <Button
                     className="w-full"
-                    onClick={() => window.open(`/board/applicants?id=${candidate.unmask_applicant_id}`, '_blank')}
+                    onClick={() =>
+                      window.open(
+                        `/board/applicants?id=${candidate.HireSense_applicant_id}`,
+                        "_blank"
+                      )
+                    }
                   >
                     View Full Analysis
                   </Button>
@@ -374,7 +439,7 @@ export default function CandidateDetailPage() {
                     Start Verification
                   </Button>
                 )}
-                
+
                 <Button variant="outline" className="w-full">
                   Export Report
                 </Button>

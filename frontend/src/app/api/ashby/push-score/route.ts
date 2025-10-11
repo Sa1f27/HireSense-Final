@@ -178,7 +178,7 @@ async function pushScoreToAshby(context: ApiHandlerContext) {
       applicantIds, // For batch operations
       ashbyObjectType = 'Candidate', // Default to Candidate for authenticity analysis
       ashbyObjectId, // Optional: specific Ashby ID to override auto-detection
-      customFieldId = '1a3a3e4d-5455-437e-8f75-4aa547222814', // UnmaskScore field UUID (verified from debug endpoint)
+      customFieldId = '1a3a3e4d-5455-437e-8f75-4aa547222814', // HireSenseScore field UUID (verified from debug endpoint)
       scoreOverride,
       batchMode = false // Flag to indicate batch processing
     } = body;
