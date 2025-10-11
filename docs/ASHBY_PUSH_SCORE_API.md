@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `/api/ashby/push-score` endpoint allows you to send AI analysis scores from HireSense to Ashby custom fields using Ashby's `customField.setValue` API.
+The `/api/ashby/push-score` endpoint allows you to send AI analysis scores from Unmask to Ashby custom fields using Ashby's `customField.setValue` API.
 
 ## Endpoint
 
@@ -18,48 +18,45 @@ The `/api/ashby/push-score` endpoint allows you to send AI analysis scores from 
 
 ```json
 {
-  "applicantId": "string", // Optional: HireSense applicant ID (to get score from AI analysis)
-  "scoreOverride": "number", // Optional: Direct score for testing (0-100)
-  "ashbyObjectType": "string", // "Candidate" or "Application" (default: "Candidate")
-  "ashbyObjectId": "string", // Optional: Specific Ashby ID (auto-detected if not provided)
-  "customFieldId": "string" // Optional: Custom field name (default: "authenticity_confidence")
+  "applicantId": "string",           // Optional: Unmask applicant ID (to get score from AI analysis)
+  "scoreOverride": "number",         // Optional: Direct score for testing (0-100)
+  "ashbyObjectType": "string",       // "Candidate" or "Application" (default: "Candidate")
+  "ashbyObjectId": "string",         // Optional: Specific Ashby ID (auto-detected if not provided)
+  "customFieldId": "string"          // Optional: Custom field name (default: "authenticity_confidence")
 }
 ```
 
 ### Parameters
 
-| Parameter         | Type   | Required | Default                   | Description                                                                 |
-| ----------------- | ------ | -------- | ------------------------- | --------------------------------------------------------------------------- |
-| `applicantId`     | string | No\*     | -                         | HireSense applicant ID to retrieve AI analysis score and Ashby Candidate ID |
-| `scoreOverride`   | number | No\*     | -                         | Direct score value for testing (0-100). Requires `ashbyObjectId`            |
-| `ashbyObjectType` | string | No       | "Candidate"               | Ashby object type ("Candidate" for authenticity analysis)                   |
-| `ashbyObjectId`   | string | No\*\*   | -                         | Specific Ashby Candidate ID (auto-detected from database)                   |
-| `customFieldId`   | string | No       | "authenticity_confidence" | Ashby custom field identifier                                               |
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `applicantId` | string | No* | - | Unmask applicant ID to retrieve AI analysis score and Ashby Candidate ID |
+| `scoreOverride` | number | No* | - | Direct score value for testing (0-100). Requires `ashbyObjectId` |
+| `ashbyObjectType` | string | No | "Candidate" | Ashby object type ("Candidate" for authenticity analysis) |
+| `ashbyObjectId` | string | No** | - | Specific Ashby Candidate ID (auto-detected from database) |
+| `customFieldId` | string | No | "authenticity_confidence" | Ashby custom field identifier |
 
-\*Either `applicantId` or `scoreOverride` must be provided.
-\*\*Required only when using `scoreOverride`. Auto-detected from database for Ashby-sourced applicants.
+*Either `applicantId` or `scoreOverride` must be provided.
+**Required only when using `scoreOverride`. Auto-detected from database for Ashby-sourced applicants.
 
 ## Auto-Detection of Ashby Candidate ID
 
 The endpoint automatically detects the Ashby Candidate ID from the database relationship:
 
 ### For Ashby-Sourced Applicants:
-
 **Candidate ID**: Retrieved from `ashby_candidates.ashby_id`
 
 ### Database Query:
-
 ```sql
-SELECT
+SELECT 
   ac.ashby_id                     -- Candidate ID for authenticity analysis
 FROM ashby_candidates ac
-JOIN applicants a ON a.id = ac.HireSense_applicant_id
+JOIN applicants a ON a.id = ac.unmask_applicant_id
 WHERE a.id = 'applicant-uuid' AND a.source = 'ashby'
 ```
 
 ### Why Candidate-Level?
-
-HireSense's authenticity analysis evaluates the **person** (CV consistency, LinkedIn credibility, GitHub activity) rather than their fit for a specific application. The authenticity score applies to the candidate across all their job applications.
+Unmask's authenticity analysis evaluates the **person** (CV consistency, LinkedIn credibility, GitHub activity) rather than their fit for a specific application. The authenticity score applies to the candidate across all their job applications.
 
 ## Response
 
@@ -84,7 +81,6 @@ HireSense's authenticity analysis evaluates the **person** (CV consistency, Link
 ### Error Responses
 
 #### 400 - Bad Request
-
 ```json
 {
   "error": "Applicant ID is required (or scoreOverride for testing)",
@@ -93,7 +89,6 @@ HireSense's authenticity analysis evaluates the **person** (CV consistency, Link
 ```
 
 #### 404 - Not Found
-
 ```json
 {
   "error": "Applicant not found",
@@ -102,7 +97,6 @@ HireSense's authenticity analysis evaluates the **person** (CV consistency, Link
 ```
 
 #### 500 - Server Error
-
 ```json
 {
   "error": "Failed to set custom field in Ashby",
@@ -119,57 +113,55 @@ HireSense's authenticity analysis evaluates the **person** (CV consistency, Link
 ### 1. Send Authenticity Score (Simplest - Recommended)
 
 ```javascript
-const response = await fetch("/api/ashby/push-score", {
-  method: "POST",
+const response = await fetch('/api/ashby/push-score', {
+  method: 'POST',
   headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer your-auth-token",
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer your-auth-token'
   },
   body: JSON.stringify({
-    applicantId: "HireSense-applicant-uuid",
+    applicantId: 'unmask-applicant-uuid'
     // Everything else auto-detected!
     // - Ashby Candidate ID: automatically found
     // - Object Type: defaults to 'Candidate' for authenticity
     // - Score: from AI analysis data
-  }),
+  })
 });
 
 const result = await response.json();
-console.log(
-  `✅ Authenticity score ${result.data.score} sent to Ashby Candidate ${result.data.ashbyObjectId}`
-);
+console.log(`✅ Authenticity score ${result.data.score} sent to Ashby Candidate ${result.data.ashbyObjectId}`);
 ```
 
 ### 2. Custom Field Name
 
 ```javascript
-const response = await fetch("/api/ashby/push-score", {
-  method: "POST",
+const response = await fetch('/api/ashby/push-score', {
+  method: 'POST',
   headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer your-auth-token",
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer your-auth-token'
   },
   body: JSON.stringify({
-    applicantId: "HireSense-applicant-uuid",
-    customFieldId: "credibility_score", // Use different field name
-  }),
+    applicantId: 'unmask-applicant-uuid',
+    customFieldId: 'credibility_score'  // Use different field name
+  })
 });
 ```
 
 ### 3. Manual Override (Testing Only)
 
 ```javascript
-const response = await fetch("/api/ashby/push-score", {
-  method: "POST",
+const response = await fetch('/api/ashby/push-score', {
+  method: 'POST',
   headers: {
-    "Content-Type": "application/json",
-    Authorization: "Bearer your-auth-token",
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer your-auth-token'
   },
   body: JSON.stringify({
-    scoreOverride: 78, // Test score
-    ashbyObjectId: "ashby-candidate-id", // Required for testing
-    customFieldId: "test_authenticity",
-  }),
+    scoreOverride: 78,                    // Test score
+    ashbyObjectId: 'ashby-candidate-id', // Required for testing
+    customFieldId: 'test_authenticity'
+  })
 });
 ```
 
@@ -178,72 +170,64 @@ const response = await fetch("/api/ashby/push-score", {
 ```javascript
 const pushScoreToAshby = async (applicantId, options = {}) => {
   try {
-    const response = await fetch(
-      "https://your-domain.com/api/ashby/push-score",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-        body: JSON.stringify({
-          applicantId,
-          ...options, // customFieldId, ashbyObjectId for testing, etc.
-        }),
-      }
-    );
+    const response = await fetch('https://your-domain.com/api/ashby/push-score', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`
+      },
+      body: JSON.stringify({
+        applicantId,
+        ...options  // customFieldId, ashbyObjectId for testing, etc.
+      })
+    });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const result = await response.json();
-
+    
     if (result.success) {
-      const { score, ashbyObjectId, ashbyObjectType, wasAutoDetected } =
-        result.data;
-      console.log(
-        `✅ Score ${score} sent to Ashby ${ashbyObjectType} ${ashbyObjectId}`
-      );
+      const { score, ashbyObjectId, ashbyObjectType, wasAutoDetected } = result.data;
+      console.log(`✅ Score ${score} sent to Ashby ${ashbyObjectType} ${ashbyObjectId}`);
       console.log(`   Auto-detected: ${wasAutoDetected}`);
       return result.data;
     } else {
-      console.error("❌ Failed to send score:", result.error);
+      console.error('❌ Failed to send score:', result.error);
       return null;
     }
+
   } catch (error) {
-    console.error("❌ Network error:", error.message);
+    console.error('❌ Network error:', error.message);
     return null;
   }
 };
 
 // Usage examples:
-await pushScoreToAshby("applicant-123"); // Auto-detect everything (recommended)
-await pushScoreToAshby("applicant-123", { customFieldId: "credibility_score" });
-await pushScoreToAshby("test-id", {
-  scoreOverride: 85,
-  ashbyObjectId: "test-candidate",
-});
+await pushScoreToAshby('applicant-123');  // Auto-detect everything (recommended)
+await pushScoreToAshby('applicant-123', { customFieldId: 'credibility_score' });
+await pushScoreToAshby('test-id', { scoreOverride: 85, ashbyObjectId: 'test-candidate' });
 ```
 
 ## Score Mapping
 
 The AI analysis score is mapped as follows:
 
-| Score Range | Interpretation                                |
-| ----------- | --------------------------------------------- |
-| 90-100      | Highly credible, minimal concerns             |
-| 70-89       | Generally credible with minor concerns        |
-| 50-69       | Moderate concerns, requires attention         |
-| 30-49       | Significant red flags, requires investigation |
-| 0-29        | High risk, major credibility issues           |
+| Score Range | Interpretation |
+|-------------|----------------|
+| 90-100 | Highly credible, minimal concerns |
+| 70-89 | Generally credible with minor concerns |
+| 50-69 | Moderate concerns, requires attention |
+| 30-49 | Significant red flags, requires investigation |
+| 0-29 | High risk, major credibility issues |
 
 ## Ashby Custom Field Setup
 
 Before using this endpoint, ensure your Ashby instance has the custom field configured for **Candidates**:
 
 1. **Create Custom Field** in Ashby admin panel under **Candidate** settings
-2. **Set Field Type** to "Number"
+2. **Set Field Type** to "Number" 
 3. **Configure Range** (suggested: 0-100)
 4. **Note the Field ID** for the `customFieldId` parameter
 5. **Apply to Candidates** (not Applications) since authenticity is person-level
@@ -259,7 +243,7 @@ Before using this endpoint, ensure your Ashby instance has the custom field conf
     "min": 0,
     "max": 100
   },
-  "description": "AI-generated authenticity score from HireSense analysis (person-level)",
+  "description": "AI-generated authenticity score from Unmask analysis (person-level)",
   "applies_to": "Candidate"
 }
 ```

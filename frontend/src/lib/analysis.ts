@@ -115,180 +115,6 @@ export async function analyzeApplicant(applicant: Applicant): Promise<Applicant>
 }
 
 /**
- * Analyzes a candidate's GitHub profile by processing each repository in chunks
- * and then summarizing the results. This avoids token limits.
- */
-async function analyzeGitHubInChunks(
-  githubData: GitHubData,
-  name?: string
-): Promise<{ summary: string; flags: any[]; score: number }> {
-  // 1. MAP STEP: Analyze each repository individually.
-  // The commit messages are not part of the final GitHubData structure in this way.
-  // We need to get them from the events analysis which is not directly passed here.
-  // The commit messages are not available in the expected structure.
-  // Let's remove the commit message part from the per-repo prompt for now to fix the error,
-  // as the data isn't being passed down correctly.
-  // A more robust solution would be to refactor how data flows from `processGitHubAccount`.
-
-  const repoAnalysesPromises = (githubData.repos || []).map(async (repo) => {
-    // The structure for commit messages was incorrect, causing an error.
-    // Removing it from this prompt to ensure the analysis can proceed.
-    const repoPrompt = `
-      You are a code analysis assistant. Analyze the following GitHub repository data for a candidate named ${name || 'Unknown'}.
-      Focus on commit messages, repo description, and general activity.
-
-      Repo: ${repo.name}
-      Description: ${repo.description}
-      Stars: ${repo.stars}
-      Analyze the repository based on its metadata.
-
-      Provide a 1-sentence summary of the activity in this repository.
-      Output JSON: {"summary": "..."}
-    `;
-    try {
-      const completion = await groq.chat.completions.create({
-        model: "openai/gpt-oss-20b",
-        messages: [{ role: "user", content: repoPrompt }],
-        response_format: { type: "json_object" },
-        temperature: 0.1,
-      });
-      const result = JSON.parse(completion.choices[0]?.message?.content || '{}');
-      return { name: repo.name, summary: result.summary || 'No summary generated.' };
-    } catch (e) {
-      console.error(`Error analyzing repo ${repo.name}:`, e);
-      return { name: repo.name, summary: 'Could not analyze repository.' };
-    }
-  });
-
-  const repoSummaries = await Promise.all(repoAnalysesPromises);
-
-  // 2. REDUCE STEP: Create a final summary from all the individual repo summaries.
-  const finalPrompt = `
-    You are a credibility-checking assistant. You have been provided with per-repository summaries for a candidate's GitHub profile.
-    Your task is to synthesize these into a final credibility assessment for the GitHub source.
-
-    Candidate Name: ${name || 'Not provided'}
-    GitHub Profile Info:
-    - Followers: ${githubData.followers}
-    - Public Repos: ${githubData.publicRepos}
-
-    Repository Summaries:
-    ${repoSummaries.map(r => `- ${r.name}: ${r.summary}`).join('\n')}
-
-    Your Tasks:
-    1.  Based on the summaries, assess the overall authenticity and professionalism of the GitHub profile.
-    2.  Identify any red or yellow flags (e.g., only forked repos, no personal projects, nonsensical commit messages).
-    3.  Provide a credibility score for the GitHub profile (0-100).
-    4.  Write a concise summary of your findings.
-
-    Output Format:
-    Return a JSON object with:
-    {
-      "score": 0-100,
-      "summary": "1-2 sentence summary of the GitHub profile.",
-      "flags": [{"type": "red"|"yellow", "category": "...", "message": "...", "severity": 1-10}]
-    }
-  `;
-
-  try {
-    const completion = await groq.chat.completions.create({
-      model: "openai/gpt-oss-20b",
-      messages: [{ role: "user", content: finalPrompt }],
-      response_format: { type: "json_object" },
-      temperature: 0.2,
-    });
-    const result = JSON.parse(completion.choices[0]?.message?.content || '{}');
-    return {
-      summary: result.summary || 'No summary could be generated for GitHub.',
-      flags: result.flags || [],
-      score: result.score || 50,
-    };
-  } catch (error) {
-    console.error(`GitHub summary analysis failed:`, error);
-    return {
-      summary: 'Analysis of the GitHub profile failed due to a technical error during final summarization.',
-      flags: [{
-        type: 'yellow',
-        category: 'system',
-        message: 'The GitHub analysis could not be completed.',
-        severity: 5
-      }],
-      score: 50,
-    };
-  }
-}
-
-/**
- * Analyzes a single data source (CV, LinkedIn, or GitHub) in isolation.
- * This is the "map" step of the analysis.
- */
-async function analyzeSingleSource(
-  sourceType: 'cv' | 'linkedin' | 'github',
-  data: CvData | LinkedInData | GitHubData,
-  name?: string
-): Promise<{ summary: string; flags: any[]; score: number }> {
-  // For GitHub, use the chunking strategy to avoid token limits.
-  if (sourceType === 'github') {
-    return analyzeGitHubInChunks(data as GitHubData, name);
-  }
-
-  // For CV and LinkedIn, use the direct analysis approach.
-
-  const prompt = `
-You are a credibility-checking assistant. Your task is to analyze a single data source for a candidate and provide a summary, a credibility score (0-100), and any potential flags.
-
-**Candidate Name:** ${name || 'Not provided'}
-**Data Source Type:** ${sourceType.toUpperCase()}
-
-**Data:**
-${JSON.stringify(data)}
-
-**Your Tasks:**
-1.  Analyze the provided ${sourceType.toUpperCase()} data for signs of authenticity and professionalism.
-2.  Identify any red or yellow flags (e.g., inconsistencies, low-quality content, fake-looking profile).
-3.  Provide a credibility score for this specific data source (0-100).
-4.  Write a concise summary of your findings.
-
-**Output Format:**
-Return a JSON object with:
-{
-  "score": 0-100,
-  "summary": "1-2 sentence summary of this source.",
-  "flags": [{"type": "red"|"yellow", "category": "...", "message": "...", "severity": 1-10}]
-}
-`;
-
-  try {
-    const completion = await groq.chat.completions.create({
-      model: "openai/gpt-oss-20b",
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" },
-      temperature: 0.2,
-    });
-
-    const result = JSON.parse(completion.choices[0]?.message?.content || '{}');
-    return {
-      summary: result.summary || `No summary could be generated for the ${sourceType.toUpperCase()}.`,
-      flags: result.flags || [],
-      score: result.score || 50,
-    };
-  } catch (error) {
-    console.error(`Analysis failed for source ${sourceType}:`, error);
-    return {
-      summary: `Analysis of the ${sourceType.toUpperCase()} failed due to a technical error.`,
-      flags: [{
-        type: 'yellow',
-        category: 'system',
-        message: `The ${sourceType.toUpperCase()} analysis could not be completed.`,
-        severity: 5
-      }],
-      score: 50,
-    };
-  }
-}
-
-
-/**
  * Perform comprehensive credibility analysis in a single call
  */
 async function performComprehensiveAnalysis(
@@ -299,48 +125,61 @@ async function performComprehensiveAnalysis(
   email?: string,
   role?: string
 ): Promise<AnalysisResult> {
-  // 1. "Map" Step: Analyze each source individually and in parallel
-  const analysisPromises = [];
-  if (cvData) {
-    analysisPromises.push(analyzeSingleSource('cv', cvData, name).then(res => ({ type: 'cv', ...res })));
-  }
-  if (linkedinData) {
-    analysisPromises.push(analyzeSingleSource('linkedin', linkedinData, name).then(res => ({ type: 'linkedin', ...res })));
-  }
-  if (githubData) {
-    analysisPromises.push(analyzeSingleSource('github', githubData, name).then(res => ({ type: 'github', ...res })));
-  }
+  const availableSourcesCount = [cvData, linkedinData, githubData].filter(Boolean).length;
 
-  const individualAnalyses = await Promise.all(analysisPromises);
-
-  // 2. "Reduce" Step: Create a final prompt with the summaries of each analysis
   const prompt = `
 You are a credibility-checking assistant inside Unmask, a tool used by hiring managers to verify whether candidates are being honest and consistent in their job applications.
 
-Your job is to review pre-analyzed summaries from different data sources (CV, LinkedIn, GitHub) and produce a final, unified credibility assessment. You are not scoring technical ability — only consistency and believability based on the summaries provided.
+Your job is to review structured data about a candidate and assess the overall *authenticity* of the profile. You are not scoring technical ability — only consistency and believability.
+
+**Important:** You are analyzing a candidate with ${availableSourcesCount} data sources available. This analysis is performed because we have sufficient data sources to perform cross-verification.
 
 **Candidate Information:**
 - Name: ${name || 'Not provided'}
 - Email: ${email || 'Not provided'}
 - Role: ${role || 'Not specified'}
 
-**Individual Analysis Summaries:**
-
-${individualAnalyses.length > 0 ? individualAnalyses.map(analysis => `
-**Source: ${analysis.type.toUpperCase()}**
-- **Credibility Score:** ${analysis.score}
-- **Summary:** ${analysis.summary}
-- **Flags:** ${analysis.flags.length > 0 ? analysis.flags.map(f => `(${f.type}) ${f.message}`).join(', ') : 'None'}
-`).join('') : 'No analysis summaries were generated.'}
+**Available Data Sources:**
+- CV: ${cvData ? 'Available' : 'Not available'}
+- LinkedIn: ${linkedinData ? (linkedinData.isDummyData ? 'Available (SIMULATED DATA FOR TESTING)' : 'Available') : 'Not available'}
+- GitHub: ${githubData ? 'Available' : 'Not available'}
 
 ${linkedinData?.isDummyData ? '⚠️ **IMPORTANT**: LinkedIn data is simulated for testing purposes. Do not treat name mismatches as red flags.' : ''}
 
+**Data:**
+CV Data: ${cvData ? JSON.stringify(cvData, null, 2) : 'Not provided'}
+LinkedIn Data: ${linkedinData ? JSON.stringify(linkedinData, null, 2) : 'Not provided'}
+GitHub Data: ${githubData ? JSON.stringify(githubData, null, 2) : 'Not provided'}
+
 **Your Tasks:**
 
-1. **Synthesize Findings:** Based *only* on the summaries provided, create a final, overall credibility score and a concise summary.
-2. **Cross-Reference:** Look for inconsistencies *between* the summaries. For example, if the CV summary mentions a job that the LinkedIn summary doesn't, that's a flag.
-3. **Aggregate Flags:** Combine flags from individual analyses and add new ones for any cross-source inconsistencies you find.
-4. **Suggest Questions:** Based on the combined findings and any inconsistencies, suggest 1-3 clarifying questions to ask the candidate.
+1. **Compare CV and LinkedIn information** (if both available)
+   - Check if the full name in the CV matches the LinkedIn data
+   - Evaluate if job titles, company names, and employment dates are consistent
+   - Flag unrealistic career jumps (e.g., 3 unicorns in a year, vague titles)
+   - Flag aliases or recent account creation (if metadata is available)
+
+2. **Verify education**
+   - Check that the institutions in the CV are real and align with those on LinkedIn (if visible)
+   - Flag degrees in the CV that don't show up on LinkedIn
+
+3. **Evaluate LinkedIn signals** (if provided)
+   - Does the candidate have at least 30–50 connections? (a near-zero number may signal a ghost profile)
+   - Do they have any activity, such as posts or comments?
+   - Are there any recommendations listed?
+   - Do their connections match the companies they list?
+
+4. **Evaluate GitHub signals** (if provided)
+   - Are repositories high quality with documentation?
+   - Do commit patterns show consistent, genuine activity?
+   - Are projects substantial and original vs tutorial following?
+   - Does the profile appear professional and complete?
+
+5. **Identify red/yellow flags**
+   - Red flag: major inconsistency (e.g. job listed in CV not on LinkedIn, alias or unverifiable employer)
+   - Yellow flag: soft concern (e.g. no GitHub, inactive LinkedIn, unverified university)
+
+6. **Suggest 1–3 questions to ask the candidate if credibility is not clear**
 
 **Scoring Guidelines:**
 - 90-100: Highly credible, minimal concerns
@@ -356,15 +195,16 @@ Return a JSON object with:
   "score": 0-100,
   "summary": "1-2 sentence judgment",
   "flags": [{"type": "red"|"yellow", "category": "consistency"|"verification"|"authenticity"|"activity", "message": "specific concern", "severity": 1-10}],
-  "suggestedQuestions": ["array of clarifying questions to ask the candidate"]
+  "suggestedQuestions": ["array of clarifying questions to ask the candidate"],
+  "sources": [{"type": "cv"|"linkedin"|"github", "available": boolean, "score": 0-100, "flags": [], "analysisDetails": {}}]
 }
 
-Be objective. Do not make assumptions. Only work with the summaries provided.
+Be objective. Do not make assumptions. Only work with the structured data provided. If data is missing, acknowledge it appropriately but still provide analysis based on what is available.
 `;
 
   try {
     const completion = await groq.chat.completions.create({
-      model: "openai/gpt-oss-20b",
+      model: "llama-3.1-70b-versatile",
       messages: [{ role: "user", content: prompt }],
       response_format: { type: "json_object" },
       temperature: 0.2,
@@ -383,7 +223,7 @@ Be objective. Do not make assumptions. Only work with the summaries provided.
       })),
       suggestedQuestions: result.suggestedQuestions || [],
       analysisDate: new Date().toISOString(),
-      sources: individualAnalyses, // Attach the detailed individual analyses
+      sources: result.sources || []
     };
   } catch (error) {
     console.error('Comprehensive analysis failed:', error);

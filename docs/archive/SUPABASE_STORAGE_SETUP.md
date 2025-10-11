@@ -4,7 +4,7 @@ This guide covers setting up Supabase Storage for CV file management in producti
 
 ## 📦 Overview
 
-The HireSense platform uses Supabase Storage to securely store and serve CV files. When candidates are imported from Ashby ATS, their CVs are downloaded and stored in Supabase for faster access and better control.
+The Unmask platform uses Supabase Storage to securely store and serve CV files. When candidates are imported from Ashby ATS, their CVs are downloaded and stored in Supabase for faster access and better control.
 
 ## 🚀 Production Setup
 
@@ -29,15 +29,15 @@ Run this SQL in your production database (SQL Editor in Supabase):
 
 ```sql
 -- Add storage path column to track stored CV files
-ALTER TABLE ashby_candidates
+ALTER TABLE ashby_candidates 
 ADD COLUMN IF NOT EXISTS cv_storage_path text;
 
 -- Add index for faster lookups
-CREATE INDEX IF NOT EXISTS idx_ashby_candidates_cv_storage_path
+CREATE INDEX IF NOT EXISTS idx_ashby_candidates_cv_storage_path 
 ON ashby_candidates(cv_storage_path);
 
 -- Comment to document the column
-COMMENT ON COLUMN ashby_candidates.cv_storage_path IS
+COMMENT ON COLUMN ashby_candidates.cv_storage_path IS 
 'Path to stored CV file in Supabase Storage bucket candidate-cvs';
 ```
 
@@ -46,10 +46,9 @@ COMMENT ON COLUMN ashby_candidates.cv_storage_path IS
 In the Storage section → Policies tab, add these RLS policies for the `candidate-cvs` bucket:
 
 #### **Insert Policy** - Users can upload CVs to their own folder
-
 ```sql
-CREATE POLICY "Users can upload CVs to own folder"
-ON storage.objects FOR INSERT TO authenticated
+CREATE POLICY "Users can upload CVs to own folder" 
+ON storage.objects FOR INSERT TO authenticated 
 WITH CHECK (
   bucket_id = 'candidate-cvs' AND
   (auth.uid())::text = (string_to_array(name, '/'))[1]
@@ -57,10 +56,9 @@ WITH CHECK (
 ```
 
 #### **Select Policy** - Users can view/download their own CVs
-
 ```sql
-CREATE POLICY "Users can view own CVs"
-ON storage.objects FOR SELECT TO authenticated
+CREATE POLICY "Users can view own CVs" 
+ON storage.objects FOR SELECT TO authenticated 
 USING (
   bucket_id = 'candidate-cvs' AND
   (auth.uid())::text = (string_to_array(name, '/'))[1]
@@ -68,10 +66,9 @@ USING (
 ```
 
 #### **Update Policy** - Users can update/replace their own CVs
-
 ```sql
-CREATE POLICY "Users can update own CVs"
-ON storage.objects FOR UPDATE TO authenticated
+CREATE POLICY "Users can update own CVs" 
+ON storage.objects FOR UPDATE TO authenticated 
 USING (
   bucket_id = 'candidate-cvs' AND
   (auth.uid())::text = (string_to_array(name, '/'))[1]
@@ -79,10 +76,9 @@ USING (
 ```
 
 #### **Delete Policy** - Users can delete their own CVs
-
 ```sql
-CREATE POLICY "Users can delete own CVs"
-ON storage.objects FOR DELETE TO authenticated
+CREATE POLICY "Users can delete own CVs" 
+ON storage.objects FOR DELETE TO authenticated 
 USING (
   bucket_id = 'candidate-cvs' AND
   (auth.uid())::text = (string_to_array(name, '/'))[1]
@@ -173,14 +169,12 @@ This usually means CVs are being fetched from Ashby instead of storage:
 For local development with Supabase CLI:
 
 1. **Start local Supabase**:
-
    ```bash
    cd frontend
    pnpm supabase start
    ```
 
 2. **Apply migrations**:
-
    ```bash
    pnpm supabase migration up
    ```
@@ -227,8 +221,8 @@ Remove orphaned files (CVs without matching database records):
 
 ```sql
 -- Find storage paths in use
-SELECT DISTINCT cv_storage_path
-FROM ashby_candidates
+SELECT DISTINCT cv_storage_path 
+FROM ashby_candidates 
 WHERE cv_storage_path IS NOT NULL;
 ```
 
@@ -243,6 +237,5 @@ Then manually remove unused files from Storage dashboard.
 ---
 
 For more information, see:
-
 - [Supabase Storage Documentation](https://supabase.com/docs/guides/storage)
 - [RLS Policies Guide](https://supabase.com/docs/guides/auth/row-level-security)
