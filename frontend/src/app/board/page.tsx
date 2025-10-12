@@ -126,7 +126,7 @@ function BoardPageContent() {
     applicantName: "",
   });
 
-  const [summaryModal, setSummaryModal] = useState({
+  const [summarySection, setSummarySection] = useState({
     isOpen: false,
     summary: "",
     loading: false,
@@ -344,7 +344,7 @@ function BoardPageContent() {
   const handleShowCallSummary = async () => {
     if (!selectedCandidateId) return;
 
-    setSummaryModal({
+    setSummarySection({
       isOpen: true,
       summary: "",
       loading: true,
@@ -361,14 +361,14 @@ function BoardPageContent() {
       const data = await response.json();
 
       if (data.success && data.summary) {
-        setSummaryModal({
+        setSummarySection({
           isOpen: true,
           summary: data.summary,
           loading: false,
           error: "",
         });
       } else {
-        setSummaryModal({
+        setSummarySection({
           isOpen: true,
           summary: "",
           loading: false,
@@ -376,7 +376,7 @@ function BoardPageContent() {
         });
       }
     } catch (error) {
-      setSummaryModal({
+      setSummarySection({
         isOpen: true,
         summary: "",
         loading: false,
@@ -387,8 +387,8 @@ function BoardPageContent() {
     }
   };
 
-  const closeSummaryModal = () => {
-    setSummaryModal({
+  const closeSummarySection = () => {
+    setSummarySection({
       isOpen: false,
       summary: "",
       loading: false,
@@ -629,6 +629,53 @@ function BoardPageContent() {
                   callInProgress={callInProgress}
                 />
 
+                {/* Call Summary Section */}
+                {summarySection.isOpen && (
+                  <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        Call Summary
+                      </h3>
+                      <button
+                        onClick={closeSummarySection}
+                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        <svg
+                          className="h-6 w-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+
+                    {summarySection.loading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                      </div>
+                    ) : summarySection.error ? (
+                      <div className="bg-red-50 border border-red-200 rounded p-4">
+                        <p className="text-red-700 text-sm">
+                          {summarySection.error}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 rounded p-4">
+                        <p className="text-gray-700 leading-relaxed">
+                          {summarySection.summary}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Show Call Summary Button */}
                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                   <Button
@@ -684,41 +731,6 @@ function BoardPageContent() {
                   Delete
                 </Button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Call Summary Modal */}
-      {summaryModal.isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white shadow-2xl border border-gray-200 w-full max-w-md p-6 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Call Summary
-            </h3>
-
-            {summaryModal.loading ? (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-              </div>
-            ) : summaryModal.error ? (
-              <div className="bg-red-50 border border-red-200 rounded p-4 mb-4">
-                <p className="text-red-700 text-sm">{summaryModal.error}</p>
-              </div>
-            ) : (
-              <div className="bg-gray-50 rounded p-4 mb-4">
-                <p className="text-gray-700">{summaryModal.summary}</p>
-              </div>
-            )}
-
-            <div className="flex gap-3 justify-end">
-              <Button
-                variant="outline"
-                onClick={closeSummaryModal}
-                className="px-6"
-              >
-                Close
-              </Button>
             </div>
           </div>
         </div>

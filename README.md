@@ -1,508 +1,86 @@
 <div align="center">
-  <img src="frontend/public/le-commit-HireSense.svg" alt="Le Commit" width="400" />
+  <img src="frontend/public/logo-2.png" alt="HireSense Logo" width="400" />
 </div>
 
-# HireSense - AI-Powered Hiring Verification Platform
+# HireSense: AI-Powered Hiring Verification Platform
 
-**Trust your hiring process again.**
+**Trust who you hire, without wasting time.**
 
-HireSense is an intelligent hiring verification platform that helps you verify candidate authenticity through comprehensive analysis of CVs, LinkedIn profiles, GitHub accounts, and automated reference calls. Built for **RAISE YOUR HACK 2025** • Vultr Track.
+HireSense is an intelligent, all-in-one platform that empowers recruiters and hiring managers to verify candidate authenticity with confidence. By seamlessly integrating with existing workflows, HireSense cross-validates information from CVs, LinkedIn profiles, and GitHub accounts, while also providing automated reference-checking calls to ensure you’re hiring the right person for the job.
 
-🌐 **Live Demo**: [HireSense.click](http://HireSense.click/)
+## 🚀 Live Demo
 
----
+**[Insert Live Demo Link Here]**
 
-## ✨ Features
+## ✨ Key Features
 
-### 🔍 **Multi-Source Profile Analysis**
+### 🤖 AI-Powered Credibility Score
 
-- **CV Processing**: Extracts and analyzes professional experience, education, skills, and credentials
-- **LinkedIn Integration**: Cross-references LinkedIn data with CV information for consistency
-- **GitHub Analysis**: Evaluates coding activity, repository quality, and technical skills
-- **Credibility Scoring**: AI-powered authenticity assessment with detailed flags and recommendations
+HireSense’s core feature is its AI-driven credibility score, which analyzes multiple data points to provide a comprehensive overview of a candidate’s profile. This includes:
 
-### 📞 **Automated Reference Calling**
+- **CV Analysis:** Extracts and verifies professional experience, education, and skills.
+- **LinkedIn Cross-Referencing:** Compares a candidate’s CV with their LinkedIn profile to identify inconsistencies.
+- **GitHub Activity Analysis:** Evaluates a developer’s coding activity, repository quality, and technical skills.
 
-- **AI-Powered Calls**: Automatically calls references using ElevenLabs Conversational AI
-- **Natural Conversations**: Professional, human-like interactions with references
-- **Transcript Analysis**: Real-time transcription and AI-powered summarization
-- **Reference Validation**: Cross-checks reference feedback with candidate claims
+### 📞 Automated Reference Calls
 
-### 🎯 **Real-Time Interview Support**
+Save time and eliminate manual effort with our automated reference-checking calls. HireSense’s AI-powered system:
 
-- **Live Feedback**: Get real-time prompts during candidate interviews
-- **Inconsistency Detection**: Flags discrepancies between sources on-the-fly
-- **Suggested Questions**: AI-generated follow-up questions based on analysis
-- **Interview Transcripts**: Live transcription with highlighted concerns
+- **Conducts professional, human-like interviews** with references.
+- **Provides real-time transcription and analysis** of the conversation.
+- **Cross-checks reference feedback** with the candidate’s claims.
 
-### 📊 **Comprehensive Dashboard**
+### ATS Integration
 
-- **Candidate Profiles**: Unified view of all candidate information
-- **Processing Pipeline**: Real-time status tracking from upload to analysis
-- **Flag Management**: Visual indicators for potential concerns
-- **Export Reports**: Detailed hiring decision support documents
+HireSense seamlessly integrates with Ashby, allowing you to:
 
----
+- **Sync candidate profiles** from your ATS to HireSense.
+- **Push credibility scores and analysis reports** back to your ATS.
+- **Streamline your hiring workflow** without switching between platforms.
+
+### 📊 Comprehensive Dashboard
+
+Our intuitive dashboard provides a unified view of all candidate information, including:
+
+- **A centralized list of all applicants** with their credibility scores.
+- **Detailed analysis reports** with flagged inconsistencies and red flags.
+- **A processing pipeline** that tracks the status of each candidate’s analysis.
 
 ## 🛠️ Technology Stack
 
-### **Frontend**
-
-- **Next.js 15** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Modern styling framework
-- **Radix UI** - Accessible component primitives
-- **Framer Motion** - Smooth animations
-
-### **Backend & Storage**
-
-- **Supabase** - PostgreSQL database with real-time capabilities
-- **Supabase Storage** - Secure file storage for CVs and documents
-- **Ashby ATS Integration** - Seamless candidate import and sync
-
-### **AI & Analysis**
-
-- **Groq API** - Fast AI inference for document analysis
-- **OpenAI GPT-4** - Advanced reasoning and summarization
-- **ElevenLabs** - Natural voice AI for reference calls
-- **PDF Processing** - Automated document parsing and extraction
-
-### **Infrastructure**
-
-- **Docker** - Containerized deployment
-- **Vultr** - Cloud hosting platform
-- **Real-time Processing** - Async job processing
-
----
-
-## 🚀 Quick Start
-
-### **Prerequisites**
-
-- Node.js 18+
-- Docker (for production deployment)
-- API keys for external services
-
-### **Development Setup**
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/le-commit/HireSense.git
-   cd HireSense
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   cd frontend
-   pnpm install
-   ```
-
-3. **Configure environment variables**
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Required environment variables:
-
-   ```env
-   # Supabase
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-   # AI Services
-   GROQ_API_KEY=your_groq_api_key
-   OPENAI_API_KEY=your_openai_api_key
-
-   # Reference Calling (ElevenLabs)
-   ELEVENLABS_API_KEY=your_elevenlabs_api_key
-   ELEVENLABS_AGENT_ID=your_agent_id
-   ELEVENLABS_AGENT_PHONE_ID=your_phone_id
-
-   # Twilio (via ElevenLabs)
-   TWILIO_ACCOUNT_SID=your_twilio_sid
-   TWILIO_AUTH_TOKEN=your_twilio_token
-   TWILIO_PHONE_NUMBER=your_twilio_number
-
-   # Ashby ATS Integration
-   ASHBY_API_KEY=your_ashby_api_key
-   ```
-
-4. **Start local supabase**
-
-   ```bash
-   supabase start
-   supabase db reset --local
-   ```
-
-5. **Start development server**
-
-   ```bash
-   pnpm dev
-   ```
-
-6. **Open your browser**
-   ```
-   http://localhost:3000
-   ```
-
----
-
-## 🔄 Webhook Queue Processing with pg_cron
-
-The application uses **pg_cron** for automated webhook queue processing in both local development and production environments.
-
-### **Automatic Processing Everywhere**
-
-✅ **Local Development**: pg_cron extension automatically installed  
-✅ **Production**: pg_cron pre-available in Supabase Cloud  
-✅ **Queue Processing**: Automatic every 2 minutes in both environments
-
-### **Zero Configuration Required**
-
-```bash
-# Just start development - queue processing works automatically!
-pnpm dev
-```
-
-**How it works:**
-
-1. Database migrations auto-install `pg_cron` extension
-2. Cron job created automatically: processes queue every 2 minutes
-3. Local development uses `host.docker.internal:3000`
-4. Production uses configured webhook base URL
-
-### **Production Setup**
-
-**Optional**: Configure production webhook URL for external deployments:
-
-```sql
--- Set production webhook base URL (optional)
-ALTER DATABASE your_production_db_name
-SET app.webhook_base_url = 'https://your-domain.com';
-```
-
-### **Queue Monitoring**
-
-Monitor queue status and cron job health:
-
-```sql
--- View pending webhooks
-SELECT webhook_type, status, priority, created_at, payload->'applicantId' as applicant_id
-FROM webhook_queue
-WHERE status IN ('pending', 'failed')
-ORDER BY priority DESC, created_at ASC;
-
--- Check pg_cron job status
-SELECT jobid, schedule, active, jobname FROM cron.job
-WHERE jobname = 'process-webhook-queue';
-
--- Use helper function for detailed status
-SELECT * FROM check_webhook_queue_cron_status();
-```
-
-### **Manual Processing (Optional)**
-
-For debugging or immediate processing:
-
-```bash
-# Local development
-curl -X POST "http://localhost:3000/api/webhooks/process-queue" \
-  -H "Authorization: Bearer webhook-secret-dev" \
-  -H "Content-Type: application/json"
-
-# Production
-curl -X POST "https://your-domain.com/api/webhooks/process-queue" \
-  -H "Authorization: Bearer your-webhook-secret" \
-  -H "Content-Type: application/json"
-```
-
-### **Queue Types & Priority**
-
-| Webhook Type | Priority                  | Purpose                                      |
-| ------------ | ------------------------- | -------------------------------------------- |
-| `score_push` | Based on AI score (1-100) | Push updated credibility scores to Ashby ATS |
-| `note_push`  | 90 (high priority)        | Push analysis notes and red flags to Ashby   |
-
-**Priority Processing**: Higher scores processed first (score 85 = priority 85)
-
----
-
-## 🌐 Production Deployment
-
-### **Vultr Deployment (Recommended)**
-
-We provide automated deployment scripts for seamless production deployment:
-
-1. **Make scripts executable**
-
-   ```bash
-   chmod +x deploy.sh rollback.sh check-status.sh
-   ```
-
-2. **Deploy to production**
-
-   ```bash
-   ./deploy.sh
-   ```
-
-3. **Check deployment status**
-
-   ```bash
-   ./check-status.sh
-   ```
-
-4. **Emergency rollback** (if needed)
-   ```bash
-   ./rollback.sh
-   ```
-
-### **Docker Deployment**
-
-1. **Build the Docker image**
-
-   ```bash
-   docker build -t HireSense:latest .
-   ```
-
-2. **Configure webhook base URL for production**
-
-   ```sql
-   -- Required: Set webhook base URL to your production domain
-   ALTER DATABASE your_production_db_name SET app.webhook_base_url = 'https://your-domain.com';
-   ```
-
-3. **Run the container**
-   ```bash
-   docker run -d \
-     --name HireSense-app \
-     -p 3000:3000 \
-     --env-file .env.local \
-     HireSense:latest
-   ```
-
-### **Manual Deployment**
-
-1. **Build the application**
-
-   ```bash
-   cd frontend
-   npm run build
-   ```
-
-2. **Configure webhook base URL for production**
-
-   ```sql
-   -- Required: Set webhook base URL to your production domain
-   ALTER DATABASE your_production_db_name SET app.webhook_base_url = 'https://your-domain.com';
-   ```
-
-3. **Start production server**
-   ```bash
-   npm start
-   ```
-
----
-
-## 🔌 API Endpoints
-
-### **Applicant Management**
-
-- `GET /api/applicants` - List all applicants
-- `POST /api/applicants` - Create new applicant with CV/LinkedIn/GitHub
-- `GET /api/applicants/[id]` - Get specific applicant
-- `PUT /api/applicants/[id]` - Update applicant information
-- `DELETE /api/applicants/[id]` - Delete applicant
-
-### **Ashby ATS Integration**
-
-- `GET /api/ashby/candidates` - List cached candidates from database with auto-sync
-- `POST /api/ashby/candidates` - Force refresh candidates from Ashby API
-- `POST /api/ashby/files` - Download and store CV in Supabase Storage (webhook endpoint)
-- `POST /api/ashby/push-score` - Send AI analysis score to Ashby custom field
-
-### **File Management**
-
-- `GET /api/files/[fileId]` - Get signed URL for file download from storage
-
-### **Reference Calling**
-
-- `POST /api/reference-call` - Initiate automated reference call
-- `GET /api/get-transcript?conversationId=` - Retrieve call transcript
-- `POST /api/summarize-transcript` - AI analysis of reference call
-
-### **Processing Pipeline**
-
-- File upload → CV/LinkedIn parsing → GitHub analysis → AI credibility assessment → Reference verification
-
----
-
-## 📚 **Documentation**
-
-### **Core Documentation**
-
-- **[Authentication Approach](docs/authentication-approach.md)** - Comprehensive auth architecture, middleware patterns, and security best practices
-- **[System Architecture](docs/architecture.md)** - Overall system design and data flow
-
-### **Development Guides**
-
-- **[Setup Guides](docs/archive/)** - Historical setup and integration documentation
-
----
-
-## 📖 Usage Guide
-
-### **Adding a New Candidate**
-
-1. **Navigate to the dashboard**: `/board`
-2. **Click "Add New Applicant"**
-3. **Upload required documents**:
-   - CV (PDF, DOC, DOCX) - **Required**
-   - LinkedIn Profile (PDF, HTML, TXT) - _Optional_
-   - GitHub Profile URL - _Optional_
-4. **Submit and wait for processing**
-
-### **Automated Reference Calling**
-
-1. **Open the reference call interface**: `/call`
-2. **Fill in reference details**:
-   - Phone number (with country code)
-   - Candidate name
-   - Reference name
-   - Company context (optional)
-   - Role and duration (optional)
-3. **Initiate the call**
-4. **Review transcript and AI summary**
-
-### **Interview Support**
-
-1. **Navigate to candidate profile**
-2. **Click "Start Interview"**
-3. **Use real-time suggestions** during the call
-4. **Review flagged inconsistencies**
-
----
-
-## 🔧 Configuration
-
-### **AI Model Configuration**
-
-- **Primary Analysis**: Groq Llama models for speed
-- **Summarization**: GPT-4o-mini for cost efficiency
-- **Voice AI**: ElevenLabs for natural conversations
-
-### **Processing Limits**
-
-- **GitHub Repositories**: 50 per analysis
-- **Content Analysis**: 3 repositories max
-- **File Size**: 10MB per document
-- **Concurrent Processing**: 3 applicants
-
-### **Security Features**
-
-- Environment variable validation
-- File type restrictions
-- Input sanitization
-- Rate limiting on API endpoints
-
----
-
-## 🚨 Troubleshooting
-
-### **Common Issues**
-
-**"Permission denied" when running deployment scripts**
-
-```bash
-chmod +x deploy.sh rollback.sh check-status.sh
-```
-
-**CV processing fails**
-
-- Ensure PDF is not password protected
-- Check file size is under 10MB
-- Verify GROQ_API_KEY is set correctly
-
-**Reference calls not working**
-
-- Verify ElevenLabs agent is configured
-- Check Twilio phone number permissions
-- Ensure all environment variables are set
-
-**Webhook queue not processing**
-
-```sql
--- Check if pg_cron job exists
-SELECT * FROM cron.job WHERE jobname = 'process-webhook-queue';
-
--- Check pending webhooks
-SELECT COUNT(*) as pending_count FROM webhook_queue WHERE status = 'pending';
-
--- Manual queue processing
-SELECT net.http_post(
-  url => 'https://your-domain.com/api/webhooks/process-queue',
-  headers => '{"Authorization": "Bearer your-webhook-secret", "Content-Type": "application/json"}'::jsonb
-);
-```
-
-**Docker deployment issues**
-
-```bash
-# Check logs
-docker logs HireSense-app
-
-# Restart container
-docker restart HireSense-app
-
-# Check environment variables
-docker exec HireSense-app env | sort
-```
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Please see our [development guide](docs/) for:
-
-- Code style guidelines
-- Testing procedures
-- Feature request process
-- Bug reporting
-
----
-
-## 📚 Documentation
-
-- [Deployment Scripts Guide](docs/DEPLOYMENT_SCRIPTS.md)
-- [Supabase Storage Setup](docs/SUPABASE_STORAGE_SETUP.md)
-- [Reference Calling Setup](docs/REFERENCE_CALLING_FEATURE.md)
-- [Vultr Deployment Guide](docs/VULTR_DEPLOYMENT.md)
-- [API Documentation](docs/SETUP_GUIDE_CALLING.md)
-
----
-
-## 📄 License
-
-This project is built for **RAISE YOUR HACK 2025** hackathon submission.
-
----
-
-## 🏆 Hackathon Details
-
-**Event**: RAISE YOUR HACK 2025
-**Track**: Vultr Infrastructure Challenge
-**Team**: le-commit
-**Live Demo**: [HireSense.click](http://HireSense.click/)
-
----
+- **Frontend:** Next.js, TypeScript, Tailwind CSS, Radix UI, Framer Motion
+- **Backend:** Supabase, PostgreSQL, pg_cron
+- **AI & Analysis:** Groq API, OpenAI GPT-4, ElevenLabs
+- **Infrastructure:** Docker, Vultr
+
+## 🖼️ Screenshots
 
 <div align="center">
-  <p>Built with ❤️ by the le-commit team</p>
-  <p>
-    <a href="https://github.com/le-commit" target="_blank">GitHub</a> •
-    <a href="http://HireSense.click/" target="_blank">Live Demo</a>
-  </p>
+  <img src="assets/landing.png" alt="HireSense Landing Page" width="800" />
+  <br/>
+  <em>Landing Page</em>
+  <br/>
+  <br/>
+  <img src="assets/board.png" alt="HireSense Dashboard" width="800" />
+  <br/>
+  <em>Candidate Dashboard</em>
+  <br/>
+  <br/>
+  <img src="assets/analysis1.png" alt="HireSense Analysis" width="800" />
+  <br/>
+  <em>AI-Powered Analysis</em>
+  <br/>
+  <br/>
+  <img src="assets/reference-call1.png" alt="HireSense Reference Call" width="800" />
+  <br/>
+  <em>Automated Reference Calls</em>
 </div>
+
+## 👥 Team
+
+HireSense was developed by a passionate team of builders:
+
+Mohammed Huzaifah
+Mohammed Murtaza uddin Maaz
+Syed Numaan
+Syed Abdul Muqeet Mujeeb
