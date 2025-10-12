@@ -1,115 +1,79 @@
 import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
+import { createClient } from '@supabase/supabase-js';
 
-// Initialize OpenAI client
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!
-});
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
-interface TranscriptEntry {
-  speaker: string;
-  timestamp: string;
-  text: string;
-}
-
-interface TranscriptData {
-  conversation_id: string;
-  status: string;
-  call_duration_secs: number;
-  message_count: number;
-  transcript: TranscriptEntry[];
+interface RequestBody {
+  applicant_id: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { transcript }: { transcript: TranscriptData } = await request.json();
+    const { applicant_id }: RequestBody = await request.json();
 
-    if (!transcript || !transcript.transcript || transcript.transcript.length === 0) {
+    if (!applicant_id) {
       return NextResponse.json(
-        { error: 'No transcript data provided or transcript is empty' },
+        { error: 'applicant_id is required' },
         { status: 400 }
       );
     }
 
-    console.log('Analyzing transcript for conversation:', transcript.conversation_id);
+    console.log('Fetching calls summary for applicant:', applicant_id);
 
-    // Format transcript for AI analysis
-    const formattedTranscript = transcript.transcript
-      .map(entry => `${entry.speaker}: ${entry.text}`)
-      .join('\n');
+    // Fetch calls_summary from applicants table in Supabase
+    const { data, error } = await supabase
+      .from('applicants')
+      .select('calls_summary')
+      .eq('id', applicant_id)
+      .single();
 
-    // Create AI prompt for reference call analysis
-    const systemPrompt = `You are an expert HR analyst specializing in reference call analysis. Your job is to analyze reference call transcripts and provide a concise, professional summary.
-
-ANALYSIS GUIDELINES:
-- Focus on the reference's actual statements about the candidate
-- Identify key strengths, weaknesses, and overall sentiment
-- Note any red flags or concerns mentioned
-- Assess the reference's recommendation level
-- Keep the summary to 1-2 sentences maximum
-- Be objective and professional
-
-SUMMARY FORMAT:
-Provide a brief short summary that captures:
-1. Overall sentiment (positive/mixed/negative)
-2. Key strengths or concerns mentioned
-3. Whether they would recommend the candidate
-
-EXAMPLE GOOD SUMMARIES:
-- "Positive feedback on technical skills and teamwork, would hire again."
-- "Mixed review citing strong output but communication challenges."
-- "Highly recommends candidate, praised leadership and reliability."
-- "Concerns raised about deadlines, but acknowledged creativity."`;
-
-    const userPrompt = `Please analyze this reference call transcript and provide a concise professional summary:
-
-TRANSCRIPT:
-${formattedTranscript}
-
-Provide only the summary, no additional text or formatting.`;
-
-    // Call OpenAI for analysis
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Using the more cost-effective model for summarization
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt
-        },
-        {
-          role: "user", 
-          content: userPrompt
-        }
-      ],
-      max_tokens: 150,
-      temperature: 0.3 // Lower temperature for more consistent summaries
-    });
-
-    const summary = completion.choices[0]?.message?.content?.trim();
-
-    if (!summary) {
-      throw new Error('Failed to generate summary from AI response');
+    if (error) {
+      console.error('Error fetching from Supabase:', error);
+      return NextResponse.json(
+        { error: 'Failed to fetch calls summary from database' },
+        { status: 500 }
+      );
     }
 
-    console.log('Generated summary for conversation:', transcript.conversation_id, summary);
+    if (!data) {
+      return NextResponse.json(
+        { error: 'Applicant not found' },
+        { status: 404 }
+      );
+    }
+
+    const summary = data.calls_summary;
+
+    if (!summary) {
+      return NextResponse.json(
+        { error: 'No calls summary available for this applicant' },
+        { status: 404 }
+      );
+    }
+
+    console.log('Successfully retrieved summary for applicant:', applicant_id);
 
     return NextResponse.json({
       success: true,
       summary,
-      conversationId: transcript.conversation_id,
-      analysisTimestamp: new Date().toISOString()
+      applicantId: applicant_id,
+      retrievedAt: new Date().toISOString()
     });
 
   } catch (error) {
-    console.error('Error analyzing transcript:', error);
+    console.error('Error in calls summary route:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     
     return NextResponse.json(
       { 
-        error: `Failed to analyze transcript: ${errorMessage}`,
+        error: `Failed to retrieve calls summary: ${errorMessage}`,
         success: false 
       },
       { status: 500 }
     );
   }
-} 
+}
