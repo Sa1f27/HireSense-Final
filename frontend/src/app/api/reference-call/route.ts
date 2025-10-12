@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
     // Send email if both email and meeting date are provided
     if (body.emailId?.trim() && body.meetingDate?.trim()) {
       const formattedDate = formatMeetingDate(body.meetingDate);
-      const meetingLink = generateGoogleMeetLink(body.referenceName, body.candidateName);
+      const meetingLink = "127.0.0.1:8000";
 
       const emailSubject = 'Reference Verification Meeting Invitation';
       const emailTextBody = `
