@@ -135,7 +135,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="p-4 border-b border-[#dbdac9]/50 flex items-center">
               <div className="flex items-center">
                 <Image
-                  src="/logo-2.pnf"
+                  src="/logo-2.png"
                   alt="HireSense"
                   width={120}
                   height={32}
