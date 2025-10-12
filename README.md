@@ -2,11 +2,11 @@
   <img src="frontend/public/logo-2.png" alt="HireSense Logo" width="400" />
 </div>
 
-# HireSense: AI-Powered Hiring Verification Platform
+# HireSense: Hire with Certainty and Heart
 
-**Trust who you hire, without wasting time.**
+**Beyond resumes, beyond interviews—discover the truth.**
 
-HireSense is an intelligent, all-in-one platform that empowers recruiters and hiring managers to verify candidate authenticity with confidence. By seamlessly integrating with existing workflows, HireSense cross-validates information from CVs, LinkedIn profiles, and GitHub accounts, while also providing automated reference-checking calls to ensure you’re hiring the right person for the job.
+HireSense is a truth engine for hiring. In a world of curated resumes, we empower you to uncover the authentic story of every candidate. By intelligently cross-validating their digital footprint and conducting empathetic, AI-powered interviews, we replace uncertainty with undeniable proof. HireSense gives you the confidence to not only hire the most skilled individual but to welcome the right person into your team—a person you can trust to build the future with.
 
 ## 🚀 Live Demo
 
@@ -14,37 +14,33 @@ HireSense is an intelligent, all-in-one platform that empowers recruiters and hi
 
 ## ✨ Key Features
 
-### 🤖 AI-Powered Credibility Score
+### 🧬 Unified Candidate Story
 
-HireSense’s core feature is its AI-driven credibility score, which analyzes multiple data points to provide a comprehensive overview of a candidate’s profile. This includes:
+Instead of scattered documents, see a single, verified narrative. HireSense automatically:
 
-- **CV Analysis:** Extracts and verifies professional experience, education, and skills.
-- **LinkedIn Cross-Referencing:** Compares a candidate’s CV with their LinkedIn profile to identify inconsistencies.
-- **GitHub Activity Analysis:** Evaluates a developer’s coding activity, repository quality, and technical skills.
+- **Cross-Validates Digital Footprints:** Seamlessly analyzes and compares CVs, LinkedIn profiles, and GitHub activity to surface the real story.
+- **Flags Inconsistencies:** Instantly highlights discrepancies that matter, saving you from manual fact-checking and doubt.
 
-### 📞 Automated Reference Calls
+### 🎙️ Empathetic AI Interviews
 
-Save time and eliminate manual effort with our automated reference-checking calls. HireSense’s AI-powered system:
+Go beyond keyword matching with conversational AI that understands nuance and character.
 
-- **Conducts professional, human-like interviews** with references.
-- **Provides real-time transcription and analysis** of the conversation.
-- **Cross-checks reference feedback** with the candidate’s claims.
+- **AI-Powered Candidate & Reference Calls:** Conducts natural, in-depth interviews with both candidates and their references to gather unbiased, truthful insights.
+- **Deep Transcript Analysis:** Doesn't just transcribe—it analyzes tone, confidence, and sentiment to give you a richer understanding of the person behind the profile.
 
-### ATS Integration
+### 🎯 The Certainty Score
 
-HireSense seamlessly integrates with Ashby, allowing you to:
+Move beyond gut feelings with a single, trustworthy metric.
 
-- **Sync candidate profiles** from your ATS to HireSense.
-- **Push credibility scores and analysis reports** back to your ATS.
-- **Streamline your hiring workflow** without switching between platforms.
+- **Holistic Credibility Rating:** Our unique AI model generates a "Certainty Score" based on verified data and interview analysis, giving you an at-a-glance measure of candidate reliability.
+- **Actionable Insights:** Surfaces not just red flags, but also hidden strengths and positive signals, enabling truly data-driven decisions.
 
-### 📊 Comprehensive Dashboard
+### Seamless ATS Integration
 
-Our intuitive dashboard provides a unified view of all candidate information, including:
+Embed certainty directly into your existing workflow.
 
-- **A centralized list of all applicants** with their credibility scores.
-- **Detailed analysis reports** with flagged inconsistencies and red flags.
-- **A processing pipeline** that tracks the status of each candidate’s analysis.
+- **Effortless Ashby Sync:** Keep your ATS as the source of truth while enriching it with HireSense's deep verification data.
+- **Focus on People, Not Paperwork:** By automating the verification process, we free you to focus on what truly matters: building human connections.
 
 ## 🛠️ Technology Stack
 
@@ -73,6 +69,7 @@ Our intuitive dashboard provides a unified view of all candidate information, in
   <br/>
   <img src="assets/reference-call1.png" alt="HireSense Reference Call" width="800" />
   <br/>
+  
   <em>Automated Reference Calls</em>
 </div>
 
