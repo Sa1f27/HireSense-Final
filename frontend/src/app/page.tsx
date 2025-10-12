@@ -117,7 +117,7 @@ export default function Home() {
                   }}
                   className="rounded-full bg-black px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-black/90 hover:scale-105 whitespace-nowrap"
                 >
-                  Join the waitlist
+                  Get Started
                 </button>
               </div>
             </div>
