@@ -136,8 +136,11 @@ export default function Home() {
         </div>
       </div>
 
-      <Features />
-      <Testimonials />
+      {/* Wrapper for Features with colored background */}
+      <div className="bg-gradient-to-b from-pink-100 via-pink-200 to-blue-200">
+        <Features />
+        <Testimonials />
+      </div>
       <Footer />
 
       {/* Demo Overlay */}

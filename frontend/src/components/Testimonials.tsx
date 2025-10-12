@@ -37,6 +37,14 @@ export default function Testimonials() {
     >
       {/* Section Header with Floating Messages */}
       <div className="mx-auto max-w-3xl text-center px-5 lg:px-0 relative">
+        {/* Liquid Glass Background behind "Stop hiring" section */}
+        <div className="absolute inset-0 -mx-8 -my-12 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/30 via-purple-400/20 to-pink-400/30 rounded-3xl"></div>
+          <div className="absolute inset-0 bg-white/50 backdrop-blur-3xl rounded-3xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-white/30 rounded-3xl"></div>
+          <div className="absolute inset-0 border border-white/40 rounded-3xl shadow-[0_8px_32px_0_rgba(31,38,135,0.15)]"></div>
+        </div>
+
         {/* Floating iMessage-style testimonials - hidden on mobile */}
         <div className="hidden lg:block absolute inset-0 pointer-events-none">
           {/* Top left messages */}
